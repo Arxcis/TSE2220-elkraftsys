@@ -1,4 +1,4 @@
-from jonas import fromPolar, parallell, printPolar, printOppg
+from jonas import fromPolar, parallell, printPolar, printOppg, plotPolar
 
 #
 # Oppg 1
@@ -34,7 +34,7 @@ Vst = fromPolar(130*3**0.5, -120 + 30)
 Vtr = fromPolar(130*3**0.5, 120 + 30)
 
 printPolar(Vr, Vs, Vt, Vrs, Vst, Vtr)
-
+plotPolar(Vr, Vs, Vt, Vrs, Vst, Vtr)
 
 # 2.2 Zeq (Ztotal)
 Zl = 5 + 10j

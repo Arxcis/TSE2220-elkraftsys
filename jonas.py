@@ -60,6 +60,52 @@ def printPolar(*rects):
 
         print(f"{name:<10}", toPolar(rect, unit))
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def plotPolar(*rects):
+    # Define complex numbers
+
+    # Extract real and imaginary parts
+    real_parts = [z.real for z in rects]
+    imag_parts = [z.imag for z in rects]
+
+    # Create plot
+    fig, ax = plt.subplots()
+    ax.axhline(0, color='gray', linewidth=0.5)
+    ax.axvline(0, color='gray', linewidth=0.5)
+    
+    # Plot arrows from origin
+    names = []
+    for z in rects:
+        # 1. Find variable name
+        frame = currentframe().f_back # Get callers frame
+        name = None
+        for nam, val in frame.f_locals.items():
+            if val is z:
+                name = nam
+                break
+
+        names.append(name)
+        plt.quiver(0, 0, z.real, z.imag, angles='xy', scale_units='xy', scale=1, color='b')
+
+        # Add label at the tip of the arrow
+        plt.text(z.real, z.imag, f'{name}', fontsize=12, ha='left', va='bottom')
+
+    # Set limits
+    limit = max((abs(rect) for rect in rects))
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    title = "-".join((f"{nam}" for nam in names))
+    ax.set_title(title)
+    
+    # Equal aspect ratio
+    ax.set_aspect('equal')
+    plt.polar()
+    plt.savefig(title+".png")
+
+
 def findV0(Zr, Zs, Zt, Vr, Vs, Vt):
     Yr, Ys, Yt = Zr**-1, Zs**-1, Zt**-1
     V0 = (Yr*Vr + Ys*Vs + Yt*Vt) / (Yr + Ys + Yt)
