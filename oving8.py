@@ -69,6 +69,8 @@ It_z = It - It_xc
 printPolar(Ir_z, Is_z, It_z)
 
 
+plotPolar(Ir, Is, It, Ir_xc, Is_xc, It_xc, Ir_z, Is_z, It_z)
+
 # 2.6 Fasespenninger
 Vr_z = Ir_z * Z
 Vs_z = Is_z * Z
