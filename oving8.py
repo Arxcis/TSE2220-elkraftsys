@@ -28,6 +28,7 @@ print()
 
 print("Oppg 2:")
 
+# 2.1 Spenninger - fase og linje til linje
 Vr = fromPolar(130, 0)
 Vs = fromPolar(130, -120)
 Vt = fromPolar(130, 120)
@@ -42,20 +43,21 @@ printPolar("Vrs", Vrs, "V")
 printPolar("Vst", Vst, "V")
 printPolar("Vtr", Vtr, "V")
 
+
+# 2.2 Zeq (Ztotal)
 Zl = 5 + 10j
 Z  = 20 + 10j
 Xc = -30j
+Zeq = Zl + parallell(Z, Xc/3)
 
 print()
 printPolar("Zl", Zl, "Ohm")
 printPolar("Z", Z, "Ohm")
 printPolar("Xc", Xc, "Ohm")
-
-Zeq = Zl + parallell(Z, Xc/3)
-
-print()
 printPolar("Zeq", Zeq, "Ohm")
 
+
+# 2.3 Linjestrømmer
 Ir = Vr/Zeq
 Is = Vs/Zeq
 It = Vt/Zeq
@@ -65,6 +67,8 @@ printPolar("Ir", Ir, "A")
 printPolar("Is", Is, "A")
 printPolar("It", It, "A")
 
+
+# 2.4 Kondensatorstrømmer
 Ir_xc = Ir * (Z/parallell(Z, Xc/3))
 Is_xc = Is * (Z/parallell(Z, Xc/3))
 It_xc = It * (Z/parallell(Z, Xc/3))
@@ -74,6 +78,8 @@ printPolar("Ir_xc", Ir_xc, "A")
 printPolar("Is_xc", Is_xc, "A")
 printPolar("It_xc", It_xc, "A")
 
+
+# 2.5 Fasestrømmer
 Ir_z = Ir - Ir_xc
 Is_z = Is - Is_xc
 It_z = It - It_xc
@@ -84,6 +90,7 @@ printPolar("Is_z", Is_z, "A")
 printPolar("It_z", It_z, "A")
 
 
+# 2.6 Fasespenninger
 Vr_z = Ir_z * Z
 Vs_z = Is_z * Z
 Vt_z = It_z * Z 
@@ -94,7 +101,7 @@ printPolar("Vs_z", Vs_z, "V")
 printPolar("Vt_z", Vt_z, "V")
 
 
-
+# 2.7 Total aktiv og reaktiv effekt i last, kondensatorer og linjeimpedanser
 Sz = 3 * Z * (abs(Ir_z)**2)
 Szl = 3 * Zl * (abs(Ir)**2)
 Sxc = 3 * Xc * (abs(Ir_xc)**2)
