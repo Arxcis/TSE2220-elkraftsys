@@ -1,4 +1,4 @@
-from jonas import toPolar, fromPolar, parallell, printPolar
+from jonas import fromPolar, parallell, printPolar
 
 #
 # Oppg 1
@@ -7,6 +7,8 @@ print("Oppg1:")
 Vr  = fromPolar(110, 0)
 Vs  = fromPolar(110, -120)
 Vt  = fromPolar(110, 120)
+
+printPolar(Vr, Vs, Vt)
 
 Zl  = 5 - 2j
 Z   = 10 + 8j
