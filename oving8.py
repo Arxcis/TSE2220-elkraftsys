@@ -16,10 +16,10 @@ Ir = Vr/Zeq
 Is = Vs/Zeq
 It = Vt/Zeq
 
-printPolar("Zeq", Zeq, "Ohm")
-printPolar("Ir", Ir, "A")
-printPolar("Is", Is, "A")
-printPolar("It", It, "A")
+printPolar(Zeq, "Ohm")
+printPolar(Ir, "A")
+printPolar(Is, "A")
+printPolar(It, "A")
 print()
 
 #
@@ -36,12 +36,12 @@ Vrs = fromPolar(130*3**0.5, 0 + 30)
 Vst = fromPolar(130*3**0.5, -120 + 30)
 Vtr = fromPolar(130*3**0.5, 120 + 30)
 
-printPolar("Vr", Vr, "V")
-printPolar("Vs", Vs, "V")
-printPolar("Vt", Vt, "V")
-printPolar("Vrs", Vrs, "V")
-printPolar("Vst", Vst, "V")
-printPolar("Vtr", Vtr, "V")
+printPolar(Vr)
+printPolar(Vs)
+printPolar(Vt)
+printPolar(Vr)
+printPolar(Vs)
+printPolar(Vt)
 
 
 # 2.2 Zeq (Ztotal)
@@ -51,10 +51,10 @@ Xc = -30j
 Zeq = Zl + parallell(Z, Xc/3)
 
 print()
-printPolar("Zl", Zl, "Ohm")
-printPolar("Z", Z, "Ohm")
-printPolar("Xc", Xc, "Ohm")
-printPolar("Zeq", Zeq, "Ohm")
+printPolar(Zl)
+printPolar(Z)
+printPolar(Xc)
+printPolar(Zeq)
 
 
 # 2.3 Linjestrømmer
@@ -63,9 +63,9 @@ Is = Vs/Zeq
 It = Vt/Zeq
 
 print()
-printPolar("Ir", Ir, "A")
-printPolar("Is", Is, "A")
-printPolar("It", It, "A")
+printPolar(Ir)
+printPolar(Is)
+printPolar(It)
 
 
 # 2.4 Kondensatorstrømmer
@@ -74,9 +74,9 @@ Is_xc = Is * (Z/parallell(Z, Xc/3))
 It_xc = It * (Z/parallell(Z, Xc/3))
 
 print()
-printPolar("Ir_xc", Ir_xc, "A")
-printPolar("Is_xc", Is_xc, "A")
-printPolar("It_xc", It_xc, "A")
+printPolar(Ir_xc)
+printPolar(Is_xc)
+printPolar(It_xc)
 
 
 # 2.5 Fasestrømmer
@@ -85,9 +85,9 @@ Is_z = Is - Is_xc
 It_z = It - It_xc
 
 print()
-printPolar("Ir_z", Ir_z, "A")
-printPolar("Is_z", Is_z, "A")
-printPolar("It_z", It_z, "A")
+printPolar(Ir_z)
+printPolar(Is_z)
+printPolar(It_z)
 
 
 # 2.6 Fasespenninger
@@ -96,9 +96,9 @@ Vs_z = Is_z * Z
 Vt_z = It_z * Z 
 
 print()
-printPolar("Vr_z", Vr_z, "V")
-printPolar("Vs_z", Vs_z, "V")
-printPolar("Vt_z", Vt_z, "V")
+printPolar(Vr_z)
+printPolar(Vs_z)
+printPolar(Vt_z)
 
 
 # 2.7 Total aktiv og reaktiv effekt i last, kondensatorer og linjeimpedanser
@@ -108,8 +108,10 @@ Sxc = 3 * Xc * (abs(Ir_xc)**2)
 S = Sz + Szl + Sxc
 
 print()
-printPolar("Sz",  Sz,  "VA")
-printPolar("Szl", Szl, "VA")
-printPolar("Sxc", Sxc, "VA")
-printPolar("S",   S,   "VA")
+printPolar(Sz)
+printPolar(Szl)
+printPolar(Sxc)
+printPolar(S)
+
+print()
 

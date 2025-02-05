@@ -25,7 +25,32 @@ def toPolar(rect, unit = ""):
     return f"{polarstr:<16}   | {rectstr:<16}"
 
 
-def printPolar(name, rect, unit = ""):
+from inspect import currentframe
+
+def printPolar(rect, unit = ""):
+    
+    # 1. Find variable name
+    frame = currentframe().f_back # Get callers frame
+    name = None
+    for nam, val in frame.f_locals.items():
+        if val is rect:
+            name = nam
+            break
+    
+    # 2. Select unit based on first letter in variable name
+    if name[0] in ["V", "U"]:
+        unit = "V"
+    elif name[0] in ["I"]:
+        unit = "A"
+    elif name[0] in ["Z", "R", "X"]:
+        unit = "Ω"
+    elif name[0] in ["S"]:
+        unit = "VA"
+    elif name[0] in ["P"]:
+        unit = "W"
+    elif name[0] in ["Q"]:
+        unit = "VAr"
+
     print(f"{name:<10}", toPolar(rect, unit))
 
 def findV0(Zr, Zs, Zt, Vr, Vs, Vt):
