@@ -25,6 +25,12 @@ def toPolar(rect, unit = ""):
     return f"{polarstr:<16}   | {rectstr:<16}"
 
 
+def printOppg(number):
+    print()
+    print( "|------------------------------------------------------------")
+    print(f"| Oppg {number}:")
+    print( "|------------------------------------------------------------")
+
 from inspect import currentframe
 
 def printPolar(*rects):

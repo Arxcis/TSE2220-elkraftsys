@@ -1,10 +1,10 @@
-from jonas import fromPolar, printPolar, findV0
+from jonas import fromPolar, printPolar, findV0, printOppg
 
 
 #
 # Oppg 1
 #
-print("Oppg 1:")
+printOppg(1)
 
 Vr = fromPolar(500)
 Vs = fromPolar(500, -120)
@@ -18,12 +18,11 @@ Zt = Zl + fromPolar(20, 60)
 V0 = findV0(Zr, Zs, Zt, Vr, Vs, Vt)
 
 printPolar(Vr, Vs, Vt, Zl, Zr, Zs, Zt, V0)
-print()
 
 #
 # Oppg 2
 #
-print("Oppg 2:")
+printOppg(2)
 Vr = fromPolar(3000)
 Vs = fromPolar(3000, -120)
 Vt = fromPolar(3000, 120)
@@ -36,13 +35,12 @@ Zt = Zl + 20 - 20j
 V0 = findV0(Zr, Zs, Zt, Vr, Vs, Vt)
 
 printPolar(Vr, Vs, Vt, Zl, Zr, Zs, Zt, V0)
-print()
 
 
 #
 # Oppg 3 
 #
-print("Oppg 3:")
+printOppg(3)
 
 Vr = fromPolar(5000)
 Vs = fromPolar(5000, -120)
@@ -56,14 +54,12 @@ Zt = Zl + 30 - 5j
 V0 = findV0(Zr, Zs, Zt, Vr, Vs, Vt)
 
 printPolar(Vr, Vs, Vt, Zl, Zr, Zs, Zt, V0)
-print()
 
 
 #
 # Oppg 5 
 #
-
-print("Oppg5:")
+printOppg(5)
 
 Ur = fromPolar(220)
 Us = fromPolar(220, -120)

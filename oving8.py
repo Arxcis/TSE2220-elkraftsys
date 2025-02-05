@@ -1,9 +1,9 @@
-from jonas import fromPolar, parallell, printPolar
+from jonas import fromPolar, parallell, printPolar, printOppg
 
 #
 # Oppg 1
 #
-print("Oppg1:")
+printOppg(1)
 Vr  = fromPolar(110, 0)
 Vs  = fromPolar(110, -120)
 Vt  = fromPolar(110, 120)
@@ -19,13 +19,11 @@ Is = Vs/Zeq
 It = Vt/Zeq
 
 printPolar(Zeq, Ir, Is, It)
-print()
 
 #
 # Oppg 2
 #
-
-print("Oppg 2:")
+printOppg(2)
 
 # 2.1 Spenninger - fase og linje til linje
 Vr = fromPolar(130, 0)
@@ -87,5 +85,4 @@ S = Sz + Szl + Sxc
 
 printPolar(Sz, Szl, Sxc, S)
 
-print()
 
