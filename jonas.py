@@ -8,10 +8,35 @@ def fromPolar(magnitude, degrees = 0, unit = ""):
 def toPolar(rect, unit = ""):
     magnitude, radians = polar(rect)
     degrees = (radians/pi) * 180
-    return f"{magnitude:>8.1f}{unit}∠({degrees:>.1f}°){'':>6} or {rect.real:.1f}+j({rect.imag:.1f})"
+
+    if unit == "Ohm":
+        unit = "Ω"
+
+    if unit == "VA":
+        real_unit = "W"
+        imag_unit = "VAr"
+    else:
+        real_unit = unit
+        imag_unit = unit
+
+    polarstr = f"{magnitude:>8.3g}{unit:<3}∠({degrees:>5.3g}°)" 
+    rectstr = f"{rect.real:>12.3g}{real_unit} {rect.imag:>9.3g}j{imag_unit}"
+
+    return f"{polarstr:<16}   | {rectstr:<16}"
+
+
+def printPolar(name, rect, unit = ""):
+    print(f"{name:<10}", toPolar(rect, unit))
 
 def findV0(Zr, Zs, Zt, Vr, Vs, Vt):
     Yr, Ys, Yt = Zr**-1, Zs**-1, Zt**-1
     V0 = (Yr*Vr + Ys*Vs + Yt*Vt) / (Yr + Ys + Yt)
     return V0
+
+def parallell(*Z):
+    admittances = (1/z for z in Z)
+    parallell_impedance = sum(admittances)**-1
+
+    return parallell_impedance
+
 
