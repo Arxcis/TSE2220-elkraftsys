@@ -66,7 +66,6 @@ It_xc_star = It * Idelingsfaktor
 It_xc_delta = It_xc_star * fromPolar(1/sqrt(3), 30)
 
 printPolar(Ir_xc_star, Is_xc_star, It_xc_star, Ir_xc_delta, Is_xc_delta, It_xc_delta)
-plotPolar(Ir_xc_star, Is_xc_star, It_xc_star, Ir_xc_delta, Is_xc_delta, It_xc_delta)
 
 # 2.5 Fasestrømmer
 
@@ -78,7 +77,7 @@ It_z = It * Idelingsfaktor
 printPolar(Ir_z, Is_z, It_z)
 
 
-plotPolar(Ir, Is, It, Ir_xc_star, Is_xc_star, It_xc_star, Ir_z, Is_z, It_z)
+plotPolar(Ir, Ir_xc_star, Ir_z)
 
 # 2.6 Fasespenninger
 Vr_z = Ir_z * Z
