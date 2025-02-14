@@ -27,7 +27,6 @@ V1s_delta = V1s - V0
 V1t_delta = V1t - V0
 
 printPolar(V0, V1r_delta, V1s_delta, V1t_delta)
-plotPolar(V0, V1r, V1s, V1t, V1r_delta, V1s_delta, V1t_delta) 
 
 # b) Finn Ifase = Ilinje i Y-kobling.
 Ir = V1r_delta/Zr
@@ -48,7 +47,6 @@ Sst = V2st * Is.conjugate()
 S = Srt + Sst
 
 printPolar(V2rt, V2st, Srt, Sst, S)
-plotPolar(Srt, Sst, S)
 
 # d) Bruk 3-wattmetermetode
 Sr = V2r * Ir.conjugate()
@@ -85,10 +83,10 @@ Is = Ist - Irs
 It = Itr - Ist
 
 # c) Effekt
-Str = Vtr * Itr.conjugate()
-Sts = (-Vst) * (-Ist).conjugate()
-S = Str + Sts
+Srt = (-Vtr) * Ir.conjugate()
+Sst = Vst *  Is.conjugate()
+S = Srt + Sst
 
-printPolar(Str, Sts, S)
-plotPolar(Str, Sts, S)
+printPolar(Sst, Srt, S)
+plotPolar(Sst, Srt, S)
 
