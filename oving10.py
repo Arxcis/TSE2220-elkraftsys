@@ -5,44 +5,59 @@ from jonas import fromPolar, printPolar, plotPolar, findV0, printOppg
 # Oppg 1
 #
 printOppg(1)
+
+# Innstillinger
 Zl = 2 + 4j
+Z2r = 20 + 10j
+Z2s = 30 + 5j
+Z2t = 20 - 20j
+Zr = Z2r + Zl
+Zs = Z2s + Zl
+Zt = Z2t + Zl
+V1r = 3000
+V1s = fromPolar(3000, -120)
+V1t = fromPolar(3000, 120)
 
-Zr = 20 + 10j + Zl
-Zs = 30 + 5j + Zl
-Zt = 20 - 20j + Zl
+printPolar(Zr, Zs, Zt, V1r, V1s, V1t)
 
-Vr = 3000
-Vs = fromPolar(3000, -120)
-Vt = fromPolar(3000, 120)
+# a) Find V2
+V0 = findV0(Zr, Zs, Zt, V1r, V1s, V1t)
+V1r_delta = V1r - V0
+V1s_delta = V1s - V0
+V1t_delta = V1t - V0
 
-V0 = findV0(Zr, Zs, Zt, Vr, Vs, Vt)
+printPolar(V0, V1r_delta, V1s_delta, V1t_delta)
+plotPolar(V0, V1r, V1s, V1t, V1r_delta, V1s_delta, V1t_delta) 
 
-printPolar(Zr, Zs, Zt)
-printPolar(Vr, Vs, Vt, V0)
-
-Vrdelta = Vr - V0
-Vsdelta = Vs - V0
-Vtdelta = Vt - V0
-
-printPolar(Vrdelta, Vsdelta, Vtdelta)
-
-Ir = Vrdelta/Zr
-Is = Vsdelta/Zs
-It = Vtdelta/Zt
+# b) Finn Ifase = Ilinje i Y-kobling.
+Ir = V1r_delta/Zr
+Is = V1s_delta/Zs
+It = V1t_delta/Zt
 
 printPolar(Ir, Is, It)
 
-Vtr = Vt - Vr
-Vts = Vt - Vs
+# c) Bruk 2-wattmetermetode til å finne P og Q
+V2r = Ir * Z2r
+V2s = Is * Z2s
+V2t = It * Z2t
 
-printPolar(Vtr, Vts)
+V2rt = V2r - V2t
+V2st = V2s - V2t 
+Srt = V2rt * Ir.conjugate()
+Sst = V2st * Is.conjugate()
+S = Srt + Sst
 
-Str = Vtr * (It - Ir).conjugate()
-Sts = Vts * (It - Is).conjugate()
-S = Str + Sts
+printPolar(V2rt, V2st, Srt, Sst, S)
+plotPolar(Srt, Sst, S)
 
-printPolar(Str, Sts, S)
-plotPolar(Str, Sts, S)
+# d) Bruk 3-wattmetermetode
+Sr = V2r * Ir.conjugate()
+Ss = V2s * Is.conjugate()
+St = V2t * It.conjugate()
+S = Sr + Ss + St
+
+printPolar(Sr, Ss, St, S) 
+plotPolar(Sr, Ss, St, S)
 
 #
 # Oppg 2
