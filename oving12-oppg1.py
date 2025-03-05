@@ -5,7 +5,6 @@ from math import acos, sqrt, pi
 from cmath import polar
 from jonas import printPolar, fromPolar, plotPolar
 
-
 # 
 # Innstillinger 
 #
@@ -13,7 +12,6 @@ P3 = 2e6
 cosfi3 = 0.85
 fi3 = acos(cosfi3)
 V3LL = 20e3
-
 
 def r(km):
     return 0.3*km
@@ -30,7 +28,6 @@ XL2 = x(L2)
 ZL1 = RL1 + XL1
 ZL2 = RL2 + XL2
 
-printPolar(ZL1, ZL2)
 
 #
 # Beregninger
@@ -38,7 +35,6 @@ printPolar(ZL1, ZL2)
 # I3
 I3 = P3/(sqrt(3)*V3LL*cosfi3)
 I3 *= fromPolar(1, 180*(-fi3/pi))
-printPolar(I3)
 
 # I2
 P2 = 3e6
@@ -64,7 +60,8 @@ V1LL = VL1LL + V2LL
 #
 # Presenter
 #
-from jonas import plotPolar
+printPolar(I3)
+printPolar(ZL1, ZL2)
 printPolar(V3LL, VL2LL, V2LL, I2)
 plotPolar(I1, I2, I3)
 printPolar(I1)
