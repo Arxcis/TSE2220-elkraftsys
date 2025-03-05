@@ -18,20 +18,15 @@ def r(km):
 def x(km):
     return 0.4j*km
 
-L1 = 30
-L2 = 15
-RL1 = r(L1)
-RL2 = r(L2)
-XL1 = x(L1)
-XL2 = x(L2)
-
-ZL1 = RL1 + XL1
-ZL2 = RL2 + XL2
-
+L1km = 30
+L2km = 15
+ZL1 = r(L1km) + x(L1km)
+ZL2 = r(L2km) + x(L2km)
 
 #
 # Beregninger
 #
+
 # I3
 I3 = P3/(sqrt(3)*V3LL*cosfi3)
 I3 *= fromPolar(1, 180*(-fi3/pi))

@@ -29,6 +29,9 @@ print("fi: ", (fi/pi)*180)
 print("V2:", V2)
 print(f"P: {Ptotal:.3g} [W]")
 
+#
+# Projeksjonsmetoden
+#
 print()
 print("Projeksjonsmetoden:")
 Vlinje_linje,_ = polar(V2)
@@ -43,6 +46,9 @@ print(f"V2LLL: {V2:.3g} [V]")
 print(f"deltaVLL: {deltaVLL:.3g} [V]")
 print(f"V1LL: {V1LL:.3g} [V]")
 
+#
+# Effektmetoden
+#
 print()
 print("Effektmetoden:")
 
@@ -67,6 +73,9 @@ print(f"V2LL: {V2LL:.3g} [V]")
 print(f"deltaVLL: {deltaVLL:.3g} [V]")
 print(f"V1LL: {V1LL:.3g} [V]")
 
+#
+# Kompleksmetoden
+#
 print()
 print("Kompleksmetoden")
 
