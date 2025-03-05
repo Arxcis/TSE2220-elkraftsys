@@ -102,7 +102,7 @@ def plotPolar(*rects):
     # Set title and save to file 
     title = "-".join((f"{nam}" for nam in names))
     #ax.set_title(title)
-    plt.savefig(title+".png")
+    plt.savefig(title+".png", dpi=300)
 
 
 def findV0(Zr, Zs, Zt, Vr, Vs, Vt):
