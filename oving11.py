@@ -2,7 +2,9 @@ from jonas import fromPolar, printPolar
 from math import acos, sin, pi, sqrt, tan
 from cmath import polar
 
-# Prep
+#
+# Innstillinger 
+#
 V2 = 66e3
 cosfi = 0.8 # induktiv
 fi = acos(cosfi)
