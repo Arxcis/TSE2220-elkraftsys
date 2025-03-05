@@ -5,7 +5,7 @@ from cmath import polar
 #
 # Innstillinger 
 #
-V2 = 66e3
+V2_ff = 66e3
 cosfi = 0.8 # induktiv
 fi = acos(cosfi)
 sinfi = sin(fi)
@@ -20,31 +20,30 @@ def x(km):
 km = 60 
 R = r(km)
 X = x(km)
-Ptotal = 6e6
+P2_fff = 6e6
 
 print("Prep:")
 print("R: ", R)
 print("X: ", X)
 print("fi: ", (fi/pi)*180)
-print("V2:", V2)
-print(f"P: {Ptotal:.3g} [W]")
+print("V2:", V2_ff)
+print(f"P: {P2_fff:.3g} [W]")
 
 #
 # Projeksjonsmetoden
 #
 print()
 print("Projeksjonsmetoden:")
-Vlinje_linje,_ = polar(V2)
 Zlinje = R + X
 
-ILL = Ptotal/(cosfi*Vlinje_linje)
-deltaVLL = ILL*(R*cosfi + X*sinfi)
-V1LL = V2 + deltaVLL
+I2 = P2_fff/(cosfi*V2_ff) / sqrt(3)
+Vlinje_ff = sqrt(3) * I2*(R*cosfi + X*sinfi)
+V1_ff = V2_ff + Vlinje_ff
 
-print(f"ILL: {ILL:.3g} [A]")
-print(f"V2LLL: {V2:.3g} [V]")
-print(f"deltaVLL: {deltaVLL:.3g} [V]")
-print(f"V1LL: {V1LL:.3g} [V]")
+print(f"I2: {I2:.3g} [A]")
+print(f"V2_ff: {V2_ff:.3g} [V]")
+print(f"Vlinje_ff: {Vlinje_ff:.3g} [V]")
+print(f"V1_ff: {V1_ff:.3g} [V]")
 
 #
 # Effektmetoden
@@ -52,26 +51,26 @@ print(f"V1LL: {V1LL:.3g} [V]")
 print()
 print("Effektmetoden:")
 
-IL = ILL / sqrt(3)
-P2 = Ptotal / 3
-Q2 = P2 * tan(fi)
-S2 = sqrt(P2*P2 + Q2*Q2)
-V2 = S2 / IL
-V2LL = V2 * sqrt(3)
+I2 = P2_fff / (cosfi*V2_ff) / sqrt(3)
+P2_f  = P2_fff / 3
+Q2_f = P2_f * tan(fi)
+S2_f = sqrt(P2_f*P2_f + Q2_f*Q2_f)
+V2_f = S2_f / I2
+V2_ff = V2_f * sqrt(3)
 
-deltaP = IL*IL*R
-deltaQ = IL*IL*X
-deltaS = sqrt(deltaP**2 + deltaQ**2)
+Plinje_f = I2*I2*R
+Qlinje_f = I2*I2*X
+Slinje_f = sqrt(Plinje_f**2 + Qlinje_f**2)
 
-deltaV = deltaS / IL
-deltaVLL = sqrt(3) * deltaV
+Vlinje_f = Slinje_f / I2
+Vlinje_ff = sqrt(3) * Vlinje_f
 
-V1LL = V2LL + deltaVLL
+V1_ff = V2_ff + Vlinje_ff
 
 print()
-print(f"V2LL: {V2LL:.3g} [V]")
-print(f"deltaVLL: {deltaVLL:.3g} [V]")
-print(f"V1LL: {V1LL:.3g} [V]")
+print(f"V2_ff: {V2_ff:.3g} [V]")
+print(f"Vlinje_ff: {Vlinje_ff:.3g} [V]")
+print(f"V1_ff: {V1_ff:.3g} [V]")
 
 #
 # Kompleksmetoden
@@ -79,12 +78,13 @@ print(f"V1LL: {V1LL:.3g} [V]")
 print()
 print("Kompleksmetoden")
 
-V2LL = fromPolar(V2LL, 0)
-VR = fromPolar(R*IL, -180*fi/pi)
-VX = fromPolar(X*IL, -180*fi/pi + 90)
-deltaVLL = sqrt(3) * (VR + VX)
+I2 = P2_fff / (cosfi*V2_ff) / sqrt(3)
+VRlinje_f = fromPolar(R*I2, -180*fi/pi)
+VXlinje_f = fromPolar(X*I2, -180*fi/pi + 90)
+VZlinje_f = VRlinje_f + VXlinje_f
+VZlinje_ff = sqrt(3) * VZlinje_f
 
-V1LL = V2LL + deltaVLL
-printPolar(V2LL, VR, VX, deltaVLL, V1LL)
+V1_ff = V2_ff + VZlinje_ff
+printPolar(V2_ff, VRlinje_f, VXlinje_f, VZlinje_f, VZlinje_ff, V1_ff)
 
 
