@@ -1,9 +1,21 @@
+"""
+Task 3: Short-circuit analysis by hand
+Oblig: Power factory
+Emne: TSE2220 Elektriske Kraftsystemer
+"""
+
 def main():
-    short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6)
-    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6)
+    # Basic network 
+    short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6, XT1merke = 0.03)
+    
+    # Changing grid from min 60MVA to 600MVA, and max 100MVA to 1000MVA.
+    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
+
+    # Changing Trafo 1 impedance from 3% -> 13%.
+    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
 
 
-def short_circuit(Sgrid_min, Sgrid_max):
+def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     print("---------------------------------")
     print(f"Grid min: {Sgrid_min:.3g}, Grid max: {Sgrid_max:.3g}")
     print("---------------------------------")
@@ -18,13 +30,13 @@ def short_circuit(Sgrid_min, Sgrid_max):
     Xgrid_max = Sbase / Sgrid_max
 
     # Traforeaktanser
-    def xtrafo(x, Smerke, Sny):
-        return x *( (Sny / Smerke) )
+    def xtrafo(Xmerke, Smerke, Sny):
+        return Xmerke *( (Sny / Smerke) )
 
-    XT1 = xtrafo(x=0.03, Smerke=Sbase, Sny=Sbase) 
-    XT2 = xtrafo(x=0.06, Smerke=0.4e6, Sny=Sbase)
-    XT3 = xtrafo(x=0.06, Smerke=0.7e6, Sny=Sbase)
-    XT4 = xtrafo(x=0.06, Smerke=2.0e6, Sny=Sbase)
+    XT1 = xtrafo(Xmerke=XT1merke, Smerke=Sbase, Sny=Sbase) 
+    XT2 = xtrafo(Xmerke=0.06, Smerke=0.4e6, Sny=Sbase)
+    XT3 = xtrafo(Xmerke=0.06, Smerke=0.7e6, Sny=Sbase)
+    XT4 = xtrafo(Xmerke=0.06, Smerke=2.0e6, Sny=Sbase)
 
     print(" | ".join([f"XTrafo{i+1}: {x:.3g}" for i,x in enumerate([XT1, XT2, XT3, XT4])]))
 
