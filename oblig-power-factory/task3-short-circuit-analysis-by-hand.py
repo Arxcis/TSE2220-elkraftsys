@@ -9,10 +9,10 @@ def main():
     # Basic network 
     short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6, XT1merke = 0.03)
     
-    # Changing grid from min 60MVA to 600MVA, and max 100MVA to 1000MVA.
+    # Changing external grid to have 10x more short circuit power
     short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
 
-    # Changing Trafo 1 impedance from 3% -> 13%.
+    # Changing Trafo 1 to have 10% more short circuit impedance
     short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
 
 
