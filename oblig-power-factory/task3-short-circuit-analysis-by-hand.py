@@ -90,8 +90,8 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     
     # Hjelpefunksjoner til print
     line = lambda names: " | ".join("----------" for _ in names)
-    names = lambda names: " | ".join([f"{x:<10}" for x in names])
-    values = lambda values: " | ".join([f"{x:>10.3g}" for x in values])
+    names = lambda names: " | ".join(f"{x:<10}" for x in names)
+    values = lambda values: " | ".join(f"{x:>10.3g}" for x in values)
 
     print(f"""
     |--------------------| {line(Names)} |
