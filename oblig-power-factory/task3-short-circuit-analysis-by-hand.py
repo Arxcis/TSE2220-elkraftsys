@@ -24,7 +24,7 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     # Base
     Sbase = 40e6  # MVA
     Vbase = 132e3 # kV
-    Xbase = ((Vbase)**2 / Sbase) # Antar at X ~= Z og bruker bare X videre. Gjør denne antagelsen siden har ingen informasjon fra nettet som sier noe om cosfi og forholdet mellom X og Z.
+    Xbase = Vbase**2 / Sbase # Antar at X ~= Z og bruker bare X videre. Gjør denne antagelsen siden har ingen informasjon fra nettet som sier noe om cosfi og forholdet mellom X og Z.
 
     # Gridreaktanser
     Xgrid_min = Sbase / Sgrid_min 
@@ -32,7 +32,7 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
 
     # Traforeaktanser
     def xtrafo(Xmerke, Smerke, Sny):
-        return Xmerke *( (Sny / Smerke) )
+        return Xmerke * (Sny / Smerke)
 
     XT1 = xtrafo(Xmerke=XT1merke, Smerke=Sbase, Sny=Sbase) 
     XT2 = xtrafo(Xmerke=0.06, Smerke=0.4e6, Sny=Sbase)
