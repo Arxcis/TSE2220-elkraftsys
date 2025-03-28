@@ -1,7 +1,8 @@
 """
-Task 3: Short-circuit analysis by hand
-Oblig: Power factory
-Emne: TSE2220 Elektriske Kraftsystemer
+------------------------------------------------------------------------------
+TSE2220: Oblig Power factory / Task3 Short-circuit analysis by hand
+Student: Jonas (267431@usn.no)
+------------------------------------------------------------------------------
 """
 
 def main():
