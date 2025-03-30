@@ -1,11 +1,14 @@
 
 def main():
-    print("main()")
     Sbase_40MVA = 40e6
     
     #
     # Step 1: Generate the Ybus matrix for the whole network with 8 buses (8x8 matrix)
     #
+    print(f"""\n
+Y admittance matrix
+----------------------------------------    
+""")
     y_trafo = lambda s, z: (z * (Sbase_40MVA/s))**-1
     YT1, YT2, YT3, YT4 = y_trafo(z=0.03j, s=40.0e6),\
                          y_trafo(z=0.06j, s= 0.4e6),\
@@ -18,6 +21,7 @@ def main():
                     y_cable(km=2.0, Vbase=11e3),\
                     y_cable(km=1.0, Vbase=11e3)
     
+
     from numpy import array,abs
     Y = array([
     # Bus   1,         2,             3,    4,              5,    6,         7,    8
@@ -25,7 +29,7 @@ def main():
         [-YT1, (YT1+YC1),          -YC1,    0,              0,    0,         0,    0], # 2. bus
         [   0,      -YC1, (YC1+YT2+YC2), -YT2,           -YC2,    0,         0,    0], # 3. etc...
         [   0,         0,          -YT2, +YT2,              0,    0,         0,    0], # 4.
-        [   0,         0,          -YC2,    0,  (YC2+YT3+YC3), -YT3,       YC3,    0], # 5.
+        [   0,         0,          -YC2,    0,  (YC2+YT3+YC3), -YT3,      -YC3,    0], # 5.
         [   0,         0,             0,    0,           -YT3, +YT3,         0,    0], # 6.
         [   0,         0,             0,    0,           -YC3,    0, (YC3+YT4), -YT4], # 7.
         [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8.
@@ -36,6 +40,12 @@ def main():
     #
     # Step 2: Setup the loads for each bus. Could add generators as well here if present, but with opposite sign.
     #
+    print(f"""\n\n      
+Bus loads
+----------------------------------------
+""")
+    print_bus_header("VA")
+        
     from math import sin, acos
 
     Sload = lambda p, cosfi: (p + (1j * p * sin(acos(cosfi)) / cosfi))/Sbase_40MVA
@@ -43,24 +53,35 @@ def main():
         0,
         0,
         0,
-        -Sload(p=150e3, cosfi=0.96),
+        -Sload(p=150e3, cosfi=0.96) ,
         0,\
         -Sload(p=400e3, cosfi=0.96),
         0,
-        -Sload(p=150e3, cosfi=0.96),
+        -Sload(p=150e3, cosfi=0.96) -Sload(p=200e3, cosfi=0.96),
     ]
-    #print(",  ".join(f"{v:>10.3g}" for v in abs(S)))
+
+    print(f"  0 | {" | ".join(f"{v:>9.3g}" for v in abs(S)*Sbase_40MVA)}")
 
     #
     # Step 3: Use Gauss-Siedel method to numerically approximate V
     #
+    N = 13
+
+    print(f"""\n\n
+Bus voltages simulation ({N} iterations to 4 digits stable)
+-----------------------------------------------------------
+""")
+    print_bus_header("V")
+    
     from numpy import conjugate, abs, ones
     
     Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
     V = ones(8)
     Yii = array([Y[i][i] for i in range(len(Y))])
 
-    for _ in range(100000):
+
+
+    for i in range(N):
 
         I = conjugate(S) / conjugate(V)
         
@@ -72,7 +93,12 @@ def main():
         # Always reset slack-bus to 1pu
         V[0] = 1
 
-        #print(",  ".join(f"{v:>10.3g}" for v in abs(V*Vbases)))
+        print(f" {i:>2} | {" | ".join(f"{v:>9.4g}" for v in abs(V*Vbases))}")
+
+
+def print_bus_header(unit):
+    print(f"  i | {" | ".join(f"{f"Bus{i+1} [{unit}]":<9}" for i in range(8))}")
+    print(f"  - | {" | ".join(f"{f"---------":<9}" for _ in range(8))}")
 
 if __name__ == "__main__":
     main()

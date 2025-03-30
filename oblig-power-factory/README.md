@@ -5,52 +5,140 @@
 This work accounts for 10% of the total grade of the subject TSE2220. It uses the simulation software DIGSILENT Power Factory and Python to solve 3 tasks. Task 1 (25%) is to build a 11kV distribution network given some preliminary data. Task 2 - Load flow simulation (35%) and Task 3 - Short-circuit analysis (40%) carries out calculations and analysis of the network.
 
 This work contains:
-* A "README.pdf"-file - containing the text you are currently reading.
-* A "network-configuration.pfd"-file (Power factory data file) containing the 11kV network fully configured and ready to run simulations.
-* A "network-short-circuit-analysis-by-hand.py"-file - which contains the shortcut-analysis using the impedance-method, done first by hand, and then formalized into a python-script.
+
+- A "README.pdf"-file - containing the text you are currently reading.
+- A "network-configuration.pfd"-file (Power factory data file) containing the 11kV network fully configured and ready to run simulations.
+- A "network-short-circuit-analysis-by-hand.py"-file - which contains the shortcut-analysis using the impedance-method, done first by hand, and then formalized into a python-script.
 
 ## Task 1: Network Configuration
 
-*Picture of the network here*
+_Picture of the network here_
 
-*Caption: Power Factory idle view of the network found inside network-configuration.pfd*
+_Caption: Power Factory idle view of the network found inside network-configuration.pfd_
 
 ## Task 2: Load-flow analysis
 
 ### 2a) Do a load flow in Power Factory
-* Picture of the grid
-* With displayed results
+
+```sh
+jonas ~/git/TSE2220-elkraftsys/oblig-power-factory $ python task2-power-flow-analysis.py
+
+
+Y admittance matrix
+----------------------------------------
+
+      33.3,      33.3,         0,         0,         0,         0,         0,         0
+      33.3,  9.57e+03,  9.54e+03,         0,         0,         0,         0,         0
+         0,  9.54e+03,  9.55e+03,     0.167,      6.63,         0,         0,         0
+         0,         0,     0.167,     0.167,         0,         0,         0,         0
+         0,         0,      6.63,         0,      20.1,     0.292,      13.3,         0
+         0,         0,         0,         0,     0.292,     0.292,         0,         0
+         0,         0,         0,         0,      13.3,         0,        14,     0.833
+         0,         0,         0,         0,         0,         0,     0.833,     0.833
+
+
+
+Bus loads
+----------------------------------------
+
+  i | Bus1 [VA] | Bus2 [VA] | Bus3 [VA] | Bus4 [VA] | Bus5 [VA] | Bus6 [VA] | Bus7 [VA] | Bus8 [VA]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+  0 |         0 |         0 |         0 |  1.56e+05 |         0 |  4.17e+05 |         0 |  1.56e+05
+
+
+
+Bus voltages simulation (13 iterations to 4 digits stable)
+-----------------------------------------------------------
+
+  i | Bus1 [V]  | Bus2 [V]  | Bus3 [V]  | Bus4 [V]  | Bus5 [V]  | Bus6 [V]  | Bus7 [V]  | Bus8 [V]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+  0 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.5 |   1.1e+04 |     227.8 |   1.1e+04 |     229.7
+  1 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 |   1.1e+04 |     227.5 |   1.1e+04 |     229.7
+  2 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.5 | 1.099e+04 |     229.7
+  3 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.4 | 1.099e+04 |     229.6
+  4 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.4 | 1.099e+04 |     229.5
+  5 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.3 | 1.099e+04 |     229.5
+  6 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.3 | 1.099e+04 |     229.5
+  7 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.3 | 1.099e+04 |     229.4
+  8 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.3 | 1.098e+04 |     229.4
+  9 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.3 | 1.098e+04 |     229.4
+ 10 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.099e+04 |     227.2 | 1.098e+04 |     229.4
+ 11 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.098e+04 |     227.2 | 1.098e+04 |     229.4
+ 12 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.098e+04 |     227.2 | 1.098e+04 |     229.3
+```
 
 ### 2b) Add 200kW to the system to either Area 1, 2 or 3
 
-* Which area would I put the load?
-* Here are some things worth considering:
-    1. Is the remaining capacity of the upstream trafos sufficient to support this new load?
-    2. Which trafo has the most/least available capacity?
-    3. What would the trafo utilization rate be for Area 1,2 and 3, before and after insertion of the 200kW load?
-    4. What should be the deciding factor? Utilization rate or balacing spare capacity?
-        * Having a balanced spare capacity in both area 1, 2 and 3 gives flexibility of where future load increases could be located. On the downside, this would decrease the maximum load. Keeping a big spare capacity in one area, and maxing out the two other areas might be beneficial if one wants to attract business with high power demands. If all the areas are averaged out, none have enough spare capacity to compete for this big customer.
+#### Add 200kW to Area 1
 
-        * Keeping utilization rate below 90% may increase longevity of components.
-        * It comes down to priorities and politics in the end. What should be the deciding factor?
+```sh
+  i | Bus1 [VA] | Bus2 [VA] | Bus3 [VA] | Bus4 [VA] | Bus5 [VA] | Bus6 [VA] | Bus7 [VA] | Bus8 [VA]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+  0 |         0 |         0 |         0 |  3.65e+05 |         0 |  4.17e+05 |         0 |  1.56e+05
 
+
+  i | Bus1 [V]  | Bus2 [V]  | Bus3 [V]  | Bus4 [V]  | Bus5 [V]  | Bus6 [V]  | Bus7 [V]  | Bus8 [V]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+ ..
+ 12 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     226.1 | 1.098e+04 |     227.2 | 1.098e+04 |     229.3
+```
+
+#### Add 200kW to Area 2
+
+```sh
+  i | Bus1 [VA] | Bus2 [VA] | Bus3 [VA] | Bus4 [VA] | Bus5 [VA] | Bus6 [VA] | Bus7 [VA] | Bus8 [VA]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+  0 |         0 |         0 |         0 |  1.56e+05 |         0 |  6.25e+05 |         0 |  1.56e+05
+
+
+  i | Bus1 [V]  | Bus2 [V]  | Bus3 [V]  | Bus4 [V]  | Bus5 [V]  | Bus6 [V]  | Bus7 [V]  | Bus8 [V]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+ ..
+ 12 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.098e+04 |     225.7 | 1.098e+04 |     229.2
+```
+
+#### Add 200kW to Area 3
+
+```sh
+  i | Bus1 [VA] | Bus2 [VA] | Bus3 [VA] | Bus4 [VA] | Bus5 [VA] | Bus6 [VA] | Bus7 [VA] | Bus8 [VA]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+  0 |         0 |         0 |         0 |  1.56e+05 |         0 |  4.17e+05 |         0 |  3.65e+05
+
+  i | Bus1 [V]  | Bus2 [V]  | Bus3 [V]  | Bus4 [V]  | Bus5 [V]  | Bus6 [V]  | Bus7 [V]  | Bus8 [V]
+  - | --------- | --------- | --------- | --------- | --------- | --------- | --------- | ---------
+ ..
+ 12 |  1.32e+05 |   1.1e+04 |   1.1e+04 |     228.4 | 1.098e+04 |     227.1 | 1.097e+04 |     228.8
+```
+
+- Which area would I put the load?
+- Here are some things worth considering:
+
+  1. Is the remaining capacity of the upstream trafos sufficient to support this new load?
+  2. Which trafo has the most/least available capacity?
+  3. What would the trafo utilization rate be for Area 1,2 and 3, before and after insertion of the 200kW load?
+  4. What should be the deciding factor? Utilization rate or balacing spare capacity?
+
+     - Having a balanced spare capacity in both area 1, 2 and 3 gives flexibility of where future load increases could be located. On the downside, this would decrease the maximum load. Keeping a big spare capacity in one area, and maxing out the two other areas might be beneficial if one wants to attract business with high power demands. If all the areas are averaged out, none have enough spare capacity to compete for this big customer.
+
+     - Keeping utilization rate below 90% may increase longevity of components.
+     - It comes down to priorities and politics in the end. What should be the deciding factor?
 
 ### 2c) Change length of the cable 1 from 200m to 16 000m
-* Display results like in 2a)
-* Does the power system still have a satisfactory network?
-* Consider the voltages on the busbars.
+
+- Display results like in 2a)
+- Does the power system still have a satisfactory network?
+- Consider the voltages on the busbars.
 
 ### 2d) How much active power losses are?
-* When running the 2c)-simulation?
 
-
+- When running the 2c)-simulation?
 
 ## Task 3: Short-circuit analysis
 
 ### 3a) Max and min three-phase short circuit
 
-* External grid 60MVA, 100MVA short-circuit power.
-* Take a picture of the screen as an answer to this task
+- External grid 60MVA, 100MVA short-circuit power.
+- Take a picture of the screen as an answer to this task
 
 ### 3b) Why are the short-circuit values different for different bus bars?
 
@@ -81,7 +169,8 @@ XCable1: 9.18e-05 | XCable2: 0.000918 | XCable3: 0.000459
 
 ### 3d) Recalculate a) with 10x external grid short-circuit
 
-* External grid min: 600MVA and max 1000MVA.
+- External grid min: 600MVA and max 1000MVA.
+
 ```
 ---------------------------------
 Grid min: 6e+08, Grid max: 1e+09
@@ -106,7 +195,6 @@ XCable1: 9.18e-05 | XCable2: 0.000918 | XCable3: 0.000459
 
 ### 3f) Increase interanl inductance (Uk) in transformer T1 to 13%.
 
-
 ```
 ---------------------------------
 Grid min: 6e+08, Grid max: 1e+09
@@ -128,5 +216,3 @@ XCable1: 9.18e-05 | XCable2: 0.000918 | XCable3: 0.000459
 ```
 
 ### 3g) Compare 3a) and 3f) - Why are the results different?
-
-
