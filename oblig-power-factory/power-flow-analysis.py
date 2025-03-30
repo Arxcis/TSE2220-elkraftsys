@@ -21,14 +21,14 @@ def main():
     from numpy import array,abs
     Y = array([
     # Bus   1,         2,             3,    4,              5,    6,         7,    8
-        [+YT1,      -YT1,             0,    0,              0,    0,         0,    0], # 1
-        [-YT1, (YT1+YC1),          -YC1,    0,              0,    0,         0,    0], # 2
-        [   0,      -YC1, (YC1+YT2+YC2), -YT2,           -YC2,    0,         0,    0], # 3
-        [   0,         0,          -YT2, +YT2,              0,    0,         0,    0], # 4
-        [   0,         0,          -YC2,    0,  (YC2+YT3+YC3), -YT3,       YC3,    0], # 5
-        [   0,         0,             0,    0,           -YT3, +YT3,         0,    0], # 6
-        [   0,         0,             0,    0,           -YC3,    0, (YC3+YT4), -YT4], # 7
-        [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8
+        [+YT1,      -YT1,             0,    0,              0,    0,         0,    0], # 1. bus
+        [-YT1, (YT1+YC1),          -YC1,    0,              0,    0,         0,    0], # 2. bus
+        [   0,      -YC1, (YC1+YT2+YC2), -YT2,           -YC2,    0,         0,    0], # 3. etc...
+        [   0,         0,          -YT2, +YT2,              0,    0,         0,    0], # 4.
+        [   0,         0,          -YC2,    0,  (YC2+YT3+YC3), -YT3,       YC3,    0], # 5.
+        [   0,         0,             0,    0,           -YT3, +YT3,         0,    0], # 6.
+        [   0,         0,             0,    0,           -YC3,    0, (YC3+YT4), -YT4], # 7.
+        [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8.
     ])
     for y in Y:
         print(",".join(f"{y:>10.3g}" for y in abs(y)))
@@ -63,11 +63,11 @@ def main():
     for _ in range(100000):
 
         I = conjugate(S) / conjugate(V)
-        YVsum = Y @ V
+        
+        YVij = Y @ V
+        YVii = Yii*V
 
-        #print(",".join(f"{v:>10.3g}" for v in abs(YVsum)))
-
-        V = (1/Yii) * (I - (YVsum - (Yii*V)))
+        V = (1/Yii) * (I - YVij + YVii)
 
         # Always reset slack-bus to 1pu
         V[0] = 1
