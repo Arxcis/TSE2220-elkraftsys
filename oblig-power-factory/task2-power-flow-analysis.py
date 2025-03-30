@@ -17,7 +17,7 @@ Y admittance matrix
     
 
     y_cable = lambda km, Vbase: (0.11*km/(Vbase**2/Sbase_40MVA) + 0.20j*km/(Vbase**2/Sbase_40MVA))**-1
-    YC1, YC2, YC3 = y_cable(km=0.2, Vbase=132e3),\
+    YC1, YC2, YC3 = y_cable(km=0.2, Vbase=11e3),\
                     y_cable(km=2.0, Vbase=11e3),\
                     y_cable(km=1.0, Vbase=11e3)
     
@@ -53,8 +53,8 @@ Bus loads
         0,
         0,
         0,
-        -Sload(p=150e3, cosfi=0.96) ,
-        0,\
+        -Sload(p=150e3, cosfi=0.96),
+        0,
         -Sload(p=400e3, cosfi=0.96),
         0,
         -Sload(p=150e3, cosfi=0.96),
@@ -76,7 +76,6 @@ Bus voltages simulation ({N} iterations to 4 digits stable)
     from numpy import conjugate, abs, ones
     
     Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
-    Ibases = Sbase_40MVA / Vbases
     V = ones(8)
     Yii = array([Y[i][i] for i in range(len(Y))])
 
