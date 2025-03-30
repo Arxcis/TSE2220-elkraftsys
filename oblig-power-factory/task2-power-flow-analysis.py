@@ -57,7 +57,7 @@ Bus loads
         0,\
         -Sload(p=400e3, cosfi=0.96),
         0,
-        -Sload(p=150e3, cosfi=0.96) -Sload(p=200e3, cosfi=0.96),
+        -Sload(p=150e3, cosfi=0.96),
     ]
 
     print(f"  0 | {" | ".join(f"{v:>9.3g}" for v in abs(S)*Sbase_40MVA)}")
@@ -76,9 +76,9 @@ Bus voltages simulation ({N} iterations to 4 digits stable)
     from numpy import conjugate, abs, ones
     
     Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
+    Ibases = Sbase_40MVA / Vbases
     V = ones(8)
     Yii = array([Y[i][i] for i in range(len(Y))])
-
 
 
     for i in range(N):
@@ -95,6 +95,19 @@ Bus voltages simulation ({N} iterations to 4 digits stable)
 
         print(f" {i:>2} | {" | ".join(f"{v:>9.4g}" for v in abs(V*Vbases))}")
 
+    
+    #
+    # Step 4: Calculate total power flow
+    #
+    I = Y.dot(V)
+    Stotal = V * conjugate(I) * Sbase_40MVA
+
+    print(f"""\n\n
+Bus power flow
+-----------------------------------------------------------
+""")
+    print_bus_header("VA")
+    print(f"    | {" | ".join(f"{s:>9.3g}" for s in abs(Stotal))}")
 
 def print_bus_header(unit):
     print(f"  i | {" | ".join(f"{f"Bus{i+1} [{unit}]":<9}" for i in range(8))}")
