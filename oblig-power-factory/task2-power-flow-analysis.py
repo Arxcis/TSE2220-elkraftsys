@@ -63,9 +63,9 @@ def main():
     #
     # Step 3: Use Gauss-Siedel method to numerically approximate V
     #
-    N = 100 
+    N = 10_000
 
-    print_title(f"Bus voltages simulation ({N} iterations to 4 digits stable)")
+    print_title(f"Bus voltages simulation ({N} iterations)")
     print_bus_header("[V]")
     
     from numpy import conjugate, abs, ones, sqrt
@@ -89,7 +89,7 @@ def main():
         #print_bus_values(i, V*Vbases)
 
     #
-    # Step 4: Calculate total power flow
+    # Step 4: Calculate total power flows
     #
     Ibases = Sbase_40MVA / (V*Vbases *sqrt(3))
     I = Y.dot(V) * Ibases
@@ -100,14 +100,12 @@ def main():
     print_bus_header("")
     print_bus_values_real("Pin[W]", Sin*Sbase_40MVA)
     print_bus_values_imag("Qin[VAr]", Sin*Sbase_40MVA)
-    print_bus_values("Uidea[V]", Vbases)
-    print_bus_values("Usimu[V]", V*Vbases)
+    print_bus_values("Videa[V]", Vbases)
+    print_bus_values("Vsimu[V]", V*Vbases)
     print_bus_values_real("Ireal[A]", I)
     print_bus_values_imag("Iimag[A]", I)
     print_bus_values_real("P[W]", S) 
     print_bus_values_imag("Q[VAr]", S)
-
-
 
 
 def print_title(title):
@@ -131,12 +129,12 @@ def print_bus_values(label, values):
 
 def print_bus_values_real(label, values):
     label = f"{label:>11}"
-    values = " | ".join(f"{v.real:>9.3g}" for v in values)
+    values = " | ".join(f"{v.real:>9.3g}" if abs(v.real) > 1e-6 else f"{0:>9.3g}" for v in values)
     print(f" {label} | {values}")
 
 def print_bus_values_imag(label, values):
     label = f"{label:>11}"
-    values = " | ".join(f"{v.imag:>9.3g}" for v in values)
+    values = " | ".join(f"{v.imag:>9.3g}" if abs(v.imag) > 1e-6 else f"{0:>9.3g}" for v in values)
     print(f" {label} | {values}")
 
 
