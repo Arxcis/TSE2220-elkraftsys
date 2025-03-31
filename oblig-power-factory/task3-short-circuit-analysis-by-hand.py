@@ -50,7 +50,7 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
 
     XCable1 = xcable(km = 0.2, Vb=11e3)
     XCable2 = xcable(km = 2.0, Vb=11e3)
-    XCable3 = xcable(km = 1.0, Vb=11e3) 
+    XCable3 = xcable(km = 1.0, Vb=11e3)
 
     print(" | ".join([f"XCable{i+1}: {x:.3g}" for i,x in enumerate([XCable1, XCable2, XCable3])]))
 

@@ -45,7 +45,7 @@ def main():
     from math import sin, acos
 
     Sload = lambda p, cosfi: (p + (1j * p * sin(acos(cosfi)) / cosfi))/Sbase_40MVA
-    S = array([
+    Sin = array([
         0,
         0,
         0,
@@ -58,12 +58,12 @@ def main():
     
     print_title("Bus loads")
     print_bus_header("[VA]")
-    print_bus_values(0, S*Sbase_40MVA)
+    print_bus_values(0, Sin*Sbase_40MVA)
 
     #
     # Step 3: Use Gauss-Siedel method to numerically approximate V
     #
-    N = 13
+    N = 100 
 
     print_title(f"Bus voltages simulation ({N} iterations to 4 digits stable)")
     print_bus_header("[V]")
@@ -71,13 +71,12 @@ def main():
     from numpy import conjugate, abs, ones, sqrt
     
     Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
-    Ibases = Sbase_40MVA / (sqrt(3)*Vbases)
 
     V = ones(8)
     Yii = array([Y[i][i] for i in range(8)])
 
     for i in range(N):
-        I = conjugate(S) / conjugate(V)
+        I = conjugate(Sin) / conjugate(V)
         
         YVij = Y.dot(V)
         YVii = Yii*V
@@ -87,20 +86,28 @@ def main():
         # Always reset slack-bus to 1pu
         V[0] = 1
         
-        print_bus_values(i, V*Vbases)
+        #print_bus_values(i, V*Vbases)
 
     #
     # Step 4: Calculate total power flow
     #
-    I = Y.dot(V) / sqrt(3)
-    S = V * conjugate(I) * sqrt(3)
-    
+    Ibases = Sbase_40MVA / (V*Vbases *sqrt(3))
+    I = Y.dot(V) * Ibases
+    S = conjugate(I)*V*Vbases*sqrt(3)
+
     # Print results
-    print_title("Bus power flow")
+    print_title("Bus power flows")
     print_bus_header("")
-    print_bus_values("[V]", V*Vbases)
-    print_bus_values("[A]", I*Ibases)
-    print_bus_values("[VA]", S*Sbase_40MVA)
+    print_bus_values_real("Pin[W]", Sin*Sbase_40MVA)
+    print_bus_values_imag("Qin[VAr]", Sin*Sbase_40MVA)
+    print_bus_values("Uidea[V]", Vbases)
+    print_bus_values("Usimu[V]", V*Vbases)
+    print_bus_values_real("Ireal[A]", I)
+    print_bus_values_imag("Iimag[A]", I)
+    print_bus_values_real("P[W]", S) 
+    print_bus_values_imag("Q[VAr]", S)
+
+
 
 
 def print_title(title):
@@ -111,14 +118,27 @@ def print_title(title):
 
 
 def print_bus_header(unit):
-    print(f"      | {" | ".join(f"{f"Bus{i+1} {unit}":<9}" for i in range(8))}")
-    print(f"    - | {" | ".join(f"{f"---------":<9}" for _ in range(8))}")
+
+    label = f"{" ":>11}"
+    print(f" {label} | {" | ".join(f"{f"Bus{i+1} {unit}":<9}" for i in range(8))}")
+    print(f" {label} | {" | ".join(f"{f"---------":<9}" for _ in range(8))}")
 
 
 def print_bus_values(label, values):
-    label = f"{label:>4}"
+    label = f"{label:>11}"
     values = " | ".join(f"{v:>9.4g}" for v in abs(values))
     print(f" {label} | {values}")
+
+def print_bus_values_real(label, values):
+    label = f"{label:>11}"
+    values = " | ".join(f"{v.real:>9.3g}" for v in values)
+    print(f" {label} | {values}")
+
+def print_bus_values_imag(label, values):
+    label = f"{label:>11}"
+    values = " | ".join(f"{v.imag:>9.3g}" for v in values)
+    print(f" {label} | {values}")
+
 
 
 if __name__ == "__main__":
