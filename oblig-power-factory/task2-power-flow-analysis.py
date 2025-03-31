@@ -74,8 +74,7 @@ def main():
     Ibases = Sbase_40MVA / (sqrt(3)*Vbases)
 
     V = ones(8)
-    Yii = array([Y[i][i] for i in range(len(Y))])
-
+    Yii = array([Y[i][i] for i in range(8)])
 
     for i in range(N):
         I = conjugate(S) / conjugate(V)

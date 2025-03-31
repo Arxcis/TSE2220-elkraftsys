@@ -10,10 +10,10 @@ def main():
     short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6, XT1merke = 0.03)
     
     # Changing external grid to have 10x more short circuit power
-    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
+    #short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
 
     # Changing Trafo 1 to have 10% more short circuit impedance
-    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
+    #short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
 
 
 def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
@@ -45,9 +45,8 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     def xcable(km, Vb):
         """For kabel flat forlegning, kabelavstand 70mm og 150mm2 tverrsnitt"""
         XCable_km = 0.20  # Ohm/km - flat forlegning (ikke trekant).
-        RCable_km = 0.124 # Ohm/km - brukes ikke siden vi bare jobber med X. Antar at R << X for hele nettet.
-
-        return XCable_km * km / (Vb**2 / Sbase) 
+        RCable_km = 0.124 # Ohm/km 
+        return ((RCable_km*km)**2 + (XCable_km*km)**2)**0.5 / (Vb**2 / Sbase) 
 
     XCable1 = xcable(km = 0.2, Vb=11e3)
     XCable2 = xcable(km = 2.0, Vb=11e3)
