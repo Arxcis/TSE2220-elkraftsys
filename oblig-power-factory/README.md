@@ -131,6 +131,18 @@ $ python task2-power-flow-analysis.py
 
 - When running the 2c)-simulation?
 
+```
+	Task 2d): How much active power losses are there when running 2c)?
+
+    |-------------| ---------- | ---------- | ---------- |
+    |             | Cable 1    | Cable 2    | Cable 3    |
+    |-------------| ---------- | ---------- | ---------- |
+    | Vcable [V]  |      766.5 |      88.91 |      35.15 |
+    | Icable [A]  |      121.2 |      112.5 |      88.91 |
+    | Pcable [W]  |  4.476e+04 |       4818 |       1506 |
+    |-------------| ---------- | ---------- | ---------- |
+```
+
 ## Task 3: Short-circuit analysis
 
 ### 3a) Max and min three-phase short circuit
