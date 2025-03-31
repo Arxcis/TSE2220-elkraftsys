@@ -5,18 +5,19 @@ def main():
     #
     # Step 1: Generate the Ybus matrix for the whole network with 8 buses (8x8 matrix)
     #
-    print(f"""\n
-Y admittance matrix
-----------------------------------------    
-""")
+    print_title("Y admittance matrix")
+   
     y_trafo = lambda s, z: (z * (Sbase_40MVA/s))**-1
+
     YT1, YT2, YT3, YT4 = y_trafo(z=0.03j, s=40.0e6),\
                          y_trafo(z=0.06j, s= 0.4e6),\
                          y_trafo(z=0.06j, s= 0.7e6),\
                          y_trafo(z=0.06j, s= 2.0e6)
     
 
-    y_cable = lambda km, Vbase: (0.11*km/(Vbase**2/Sbase_40MVA) + 0.20j*km/(Vbase**2/Sbase_40MVA))**-1
+    y_cable = lambda km, Vbase: (0.11*km/(Vbase**2/Sbase_40MVA) \
+                              + 0.20j*km/(Vbase**2/Sbase_40MVA))**-1
+
     YC1, YC2, YC3 = y_cable(km=0.2, Vbase=11e3),\
                     y_cable(km=2.0, Vbase=11e3),\
                     y_cable(km=1.0, Vbase=11e3)
@@ -40,16 +41,11 @@ Y admittance matrix
     #
     # Step 2: Setup the loads for each bus. Could add generators as well here if present, but with opposite sign.
     #
-    print(f"""\n\n      
-Bus loads
-----------------------------------------
-""")
-    print_bus_header("VA")
         
     from math import sin, acos
 
     Sload = lambda p, cosfi: (p + (1j * p * sin(acos(cosfi)) / cosfi))/Sbase_40MVA
-    S = [
+    S = array([
         0,
         0,
         0,
@@ -57,60 +53,74 @@ Bus loads
         0,
         -Sload(p=400e3, cosfi=0.96),
         0,
-        -Sload(p=150e3, cosfi=0.96),
-    ]
-
-    print(f"  0 | {" | ".join(f"{v:>9.3g}" for v in abs(S)*Sbase_40MVA)}")
+        -Sload(p=1500e3, cosfi=0.96),
+    ])
+    
+    print_title("Bus loads")
+    print_bus_header("[VA]")
+    print_bus_values(0, S*Sbase_40MVA)
 
     #
     # Step 3: Use Gauss-Siedel method to numerically approximate V
     #
     N = 13
 
-    print(f"""\n\n
-Bus voltages simulation ({N} iterations to 4 digits stable)
------------------------------------------------------------
-""")
-    print_bus_header("V")
+    print_title(f"Bus voltages simulation ({N} iterations to 4 digits stable)")
+    print_bus_header("[V]")
     
-    from numpy import conjugate, abs, ones
+    from numpy import conjugate, abs, ones, sqrt
     
     Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
+    Ibases = Sbase_40MVA / (sqrt(3)*Vbases)
+
     V = ones(8)
     Yii = array([Y[i][i] for i in range(len(Y))])
 
 
     for i in range(N):
-
         I = conjugate(S) / conjugate(V)
         
-        YVij = Y @ V
+        YVij = Y.dot(V)
         YVii = Yii*V
 
         V = (1/Yii) * (I - YVij + YVii)
 
         # Always reset slack-bus to 1pu
         V[0] = 1
+        
+        print_bus_values(i, V*Vbases)
 
-        print(f" {i:>2} | {" | ".join(f"{v:>9.4g}" for v in abs(V*Vbases))}")
-
-    
     #
     # Step 4: Calculate total power flow
     #
-    I = Y.dot(V)
-    Stotal = V * conjugate(I) * Sbase_40MVA
+    I = Y.dot(V) / sqrt(3)
+    S = V * conjugate(I) * sqrt(3)
+    
+    # Print results
+    print_title("Bus power flow")
+    print_bus_header("")
+    print_bus_values("[V]", V*Vbases)
+    print_bus_values("[A]", I*Ibases)
+    print_bus_values("[VA]", S*Sbase_40MVA)
 
-    print(f"""\n\n
-Bus power flow
+
+def print_title(title):
+        print(f"""\n\n
+{title}
 -----------------------------------------------------------
 """)
-    print_bus_header("VA")
-    print(f"    | {" | ".join(f"{s:>9.3g}" for s in abs(Stotal))}")
+
 
 def print_bus_header(unit):
-    print(f"  i | {" | ".join(f"{f"Bus{i+1} [{unit}]":<9}" for i in range(8))}")
-    print(f"  - | {" | ".join(f"{f"---------":<9}" for _ in range(8))}")
+    print(f"      | {" | ".join(f"{f"Bus{i+1} {unit}":<9}" for i in range(8))}")
+    print(f"    - | {" | ".join(f"{f"---------":<9}" for _ in range(8))}")
+
+
+def print_bus_values(label, values):
+    label = f"{label:>4}"
+    values = " | ".join(f"{v:>9.4g}" for v in abs(values))
+    print(f" {label} | {values}")
+
 
 if __name__ == "__main__":
     main()

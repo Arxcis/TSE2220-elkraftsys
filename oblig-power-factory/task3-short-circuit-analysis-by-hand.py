@@ -42,16 +42,16 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     print(" | ".join([f"XTrafo{i+1}: {x:.3g}" for i,x in enumerate([XT1, XT2, XT3, XT4])]))
 
     # Kabelreaktanser
-    def xcable(km):
+    def xcable(km, Vb):
         """For kabel flat forlegning, kabelavstand 70mm og 150mm2 tverrsnitt"""
-        XCable_km = 0.20 # Ohm/km - flat forlegning (ikke trekant).
-        RCable_km = 0.11 # Ohm/km - brukes ikke siden vi bare jobber med X. Antar at R << X for hele nettet.
+        XCable_km = 0.20  # Ohm/km - flat forlegning (ikke trekant).
+        RCable_km = 0.124 # Ohm/km - brukes ikke siden vi bare jobber med X. Antar at R << X for hele nettet.
 
-        return XCable_km * km / Xbase
+        return XCable_km * km / (Vb**2 / Sbase) 
 
-    XCable1 = xcable(km = 0.2)
-    XCable2 = xcable(km = 2.0)
-    XCable3 = xcable(km = 1.0) 
+    XCable1 = xcable(km = 0.2, Vb=11e3)
+    XCable2 = xcable(km = 2.0, Vb=11e3)
+    XCable3 = xcable(km = 1.0, Vb=11e3) 
 
     print(" | ".join([f"XCable{i+1}: {x:.3g}" for i,x in enumerate([XCable1, XCable2, XCable3])]))
 
