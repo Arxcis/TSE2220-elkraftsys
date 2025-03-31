@@ -1,15 +1,39 @@
+"""
+------------------------------------------------------------------------------
+TSE2220: Oblig Power factory / Task2 Power-flow analysis "by hand"
+Student: Jonas (267431@usn.no)
+------------------------------------------------------------------------------
+"""
 
 def main():
-    #
-    # Step 0: Set network Sbase
-    #
     Sbase = 40e6
+
+    title("Task 2a): Bus voltage and power flow simulation")
+    load_flow(Sbase)
     
+    
+    title("Task 2b-1): Add 200kW load to Area 1")
+    load_flow(Sbase, s_extra_area1 = -s_pu(Sbase, p=200e3, cosfi=0.96))
+    
+    
+    title("Task 2b-2): Add 200kW load to Area 2")
+    load_flow(Sbase, s_extra_area2 = -s_pu(Sbase, p=200e3, cosfi=0.96))
+
+
+    title("Task 2b-3): Add 200kW load to Area 3")
+    load_flow(Sbase, s_extra_area3 = -s_pu(Sbase, p=200e3, cosfi=0.96))
+
+
+    title("Task 2c): Change length of the cable 1 from 200m to 16 000m")
+    load_flow(Sbase, cable1_km=16.0)
+
+
+def load_flow(sbase, s_extra_area1 = 0, s_extra_area2 = 0, s_extra_area3 = 0, cable1_km = 0.2):
     #
     # Step 1: Generate the Ybus matrix for the whole network with 8 buses (8x8 matrix)
     #
     def ytrafo_pu(s, z):
-        z_pu = z * (Sbase/s)
+        z_pu = z * (sbase/s)
         return 1/z_pu
 
     YT1, YT2, YT3, YT4 = ytrafo_pu(z=0.03j, s=40.0e6),\
@@ -19,13 +43,13 @@ def main():
     
 
     def ycable_pu(km, vbase):
-        zbase = vbase**2/Sbase
+        zbase = vbase**2/sbase
         r_pu = 0.11*km / zbase
         x_pu = 0.20j*km / zbase
 
         return 1/(r_pu + x_pu)
 
-    YC1, YC2, YC3 = ycable_pu(km=0.2, vbase=11e3),\
+    YC1, YC2, YC3 = ycable_pu(km=cable1_km, vbase=11e3),\
                     ycable_pu(km=2.0, vbase=11e3),\
                     ycable_pu(km=1.0, vbase=11e3)
     
@@ -48,72 +72,17 @@ def main():
     #           * Generators + positive sign.
     #           * Loads - negative sign
     #
-    from math import sin, acos
+    Sload = array([
+        0,
+        0,
+        0,
+        -s_pu(sbase, p=150e3, cosfi=0.96) + s_extra_area1,
+        0,
+        -s_pu(sbase, p=400e3, cosfi=0.96) + s_extra_area2,
+        0,
+        -s_pu(sbase, p=1500e3, cosfi=0.96) + s_extra_area3,
+    ])
 
-    def s_pu(p, cosfi):
-        fi = acos(cosfi)
-        s = p/cosfi
-        q = 1j * s * sin(fi)
-
-        return (p + q) / Sbase
-
-    title("Task 2a): Bus voltage and power flow simulation")
-
-    load_flow(Ybus, Sbase, Sload = array([
-        0,
-        0,
-        0,
-        -s_pu(p=150e3, cosfi=0.96),
-        0,
-        -s_pu(p=400e3, cosfi=0.96),
-        0,
-        -s_pu(p=1500e3, cosfi=0.96),
-    ]))
-    
-    
-    title("Task 2b-1): Add 200kW load to Area 1")
-
-    load_flow(Ybus, Sbase, Sload = array([
-        0,
-        0,
-        0,
-        -s_pu(p=150e3, cosfi=0.96) - s_pu(p=200e3, cosfi=0.96), # <-- Add 200kw load to Area 1
-        0,
-        -s_pu(p=400e3, cosfi=0.96),
-        0,
-        -s_pu(p=1500e3, cosfi=0.96),
-    ]))
-    
-    
-    title("Task 2b-2): Add 200kW load to Area 2")
-
-    load_flow(Ybus, Sbase, Sload = array([
-        0,
-        0,
-        0,
-        -s_pu(p=150e3, cosfi=0.96),
-        0,
-        -s_pu(p=400e3, cosfi=0.96) - s_pu(p=200e3, cosfi=0.96), # <-- Add 200kw load to Area 2
-        0,
-        -s_pu(p=1500e3, cosfi=0.96),
-    ]))
-
-
-    title("Task 2b-3): Add 200kW load to Area 3")
-
-    load_flow(Ybus, Sbase, Sload = array([
-        0,
-        0,
-        0,
-        -s_pu(p=150e3, cosfi=0.96),
-        0,
-        -s_pu(p=400e3, cosfi=0.96),
-        0,
-        -s_pu(p=1500e3, cosfi=0.96) - s_pu(p=200e3, cosfi=0.96), # <-- Add 200kw load to Area 3
-    ]))
-
-
-def load_flow(Ybus, Sbase, Sload):
     #
     # Step 3: Use Gauss-Siedel method to numerically approximate V
     #
@@ -138,7 +107,7 @@ def load_flow(Ybus, Sbase, Sload):
     #
     # Step 4: Calculate total power flows
     #
-    Ibases = Sbase / (Vbus*Vbases * sqrt(3))
+    Ibases = sbase / (Vbus*Vbases * sqrt(3))
     I = Ybus.dot(Vbus) * Ibases
     Sbus = conjugate(I) * Vbus*Vbases * sqrt(3)
 
@@ -153,13 +122,26 @@ def load_flow(Ybus, Sbase, Sload):
     | Vinit [V]   | {abs_values(Vbases)} |
     | Vsimu [V]   | {abs_values(Vbus*Vbases)} |
     |-------------| {line()} |
-    | Pload [W]   | {real_values(Sload*Sbase)} |
+    | Pload [W]   | {real_values(Sload*sbase)} |
     | Psimu [W]   | {real_values(Sbus)} |
     |-------------| {line()} |
-    | Qload [VAr] | {imag_values(Sload*Sbase)} |
+    | Qload [VAr] | {imag_values(Sload*sbase)} |
     | Qsimu [VAr] | {imag_values(Sbus)} |
     |-------------| {line()} |
+    | Sload [VA]  | {abs_values(Sload*sbase)} |
+    | Ssimu [VA]  | {abs_values(Sbus)} |
+    |-------------| {line()} |
     """)
+
+
+def s_pu(sbase, p, cosfi):
+    from math import sin, acos
+
+    fi = acos(cosfi)
+    s = p/cosfi
+    q = 1j * s * sin(fi)
+
+    return (p + q) / sbase
 
 
 # Print helpers

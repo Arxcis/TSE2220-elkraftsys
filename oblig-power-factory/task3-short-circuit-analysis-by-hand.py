@@ -1,6 +1,6 @@
 """
 ------------------------------------------------------------------------------
-TSE2220: Oblig Power factory / Task3 Short-circuit analysis by hand
+TSE2220: Oblig Power factory / Task3 Short-circuit analysis "by hand"
 Student: Jonas (267431@usn.no)
 ------------------------------------------------------------------------------
 """
@@ -10,10 +10,10 @@ def main():
     short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6, XT1merke = 0.03)
     
     # Changing external grid to have 10x more short circuit power
-    #short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
+    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
 
     # Changing Trafo 1 to have 10% more short circuit impedance
-    #short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
+    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
 
 
 def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
