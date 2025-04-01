@@ -130,21 +130,13 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
     # Step 5: Print results
     #
     print(f"""
-    |-------------| {line(8)} |
-    |             | {names("Bus", 8)} |
-    |-------------| {line(8)} |
-    | Vinit [V]   | {abs_values(Vbases)} |
-    | Vsimu [V]   | {abs_values(Vbus*Vbases)} |
-    |-------------| {line(8)} |
-    | Pload [W]   | {real_values(Sload*Sbase)} |
-    | Psimu [W]   | {real_values(Sbus)} |
-    |-------------| {line(8)} |
-    | Qload [VAr] | {imag_values(Sload*Sbase)} |
-    | Qsimu [VAr] | {imag_values(Sbus)} |
-    |-------------| {line(8)} |
-    | Sload [VA]  | {abs_values(Sload*Sbase)} |
-    | Ssimu [VA]  | {abs_values(Sbus)} |
-    |-------------| {line(8)} |
+    |--------------| {line(8)} |
+    |              | {names("Bus", 8)} |
+    |--------------| {line(8)} |
+    | Vnominal [V] | {abs_values(Vbases)} |
+    | Vactual  [V] | {abs_values(Vbus*Vbases)} |
+    | Vactual [pu] | {abs_values(Vbus)} |
+    |--------------| {line(8)} |
     """)
 
     Ycable = array([YC1,YC2,YC3]) / (11e3**2/Sbase)
@@ -179,15 +171,15 @@ def active_power_losses(Ycable, Vbus):
 def title(text):
     print("\n\t"+text)
 def line(count):
-    return " | ".join("----------" for _ in range(count))
+    return " | ".join("--------" for _ in range(count))
 def names(name, count):
-    return " | ".join(f"{f"{name} {i}":<10}" for i in range(1, count+1))
+    return " | ".join(f"{f"{name} {i}":<8}" for i in range(1, count+1))
 def real_values(values): 
-    return" | ".join(f"{x.real:>10.4g}" if abs(x) > 1e-6 else f"{0:>10}" for x in values)
+    return" | ".join(f"{x.real:>8.3g}" if abs(x) > 1e-6 else f"{0:>8}" for x in values)
 def imag_values(values): 
-    return" | ".join(f"{x.imag:>10.4g}" if abs(x) > 1e-6 else f"{0:>10}" for x in values)
+    return" | ".join(f"{x.imag:>8.3g}" if abs(x) > 1e-6 else f"{0:>8}" for x in values)
 def abs_values(values): 
-    return" | ".join(f"{abs(x):>10.4g}" if abs(x) > 1e-6 else f"{0:>10}" for x in values)
+    return" | ".join(f"{abs(x):>8.3g}" if abs(x) > 1e-6 else f"{0:>8}" for x in values)
 
 
 if __name__ == "__main__":
