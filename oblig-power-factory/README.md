@@ -12,9 +12,31 @@ This work contains:
 
 ## Task 1: Network Configuration
 
-_Picture of the network here_
-
-_Caption: Power Factory idle view of the network found inside network-configuration.pfd_
+```
+         --------
+         | Grid |
+         --------
+             |
+     ---------------
+     Trafo 1 | 132kV
+             O
+             O
+             |  11kV
+     ---------------   
+             |
+     Cable 1 |   |--- Cable 2 ---|--- Cable 3 -----|
+             |   |               |                 |    
+     ---------------    ---------------    --------------- 
+     Trafo 2 | 11kV     Trafo 3 | 11kV     Trafo 4 | 11kV
+             O                  O                  O
+             O                  O                  O
+             | 230V             | 230V             | 230V
+     ---------------    ---------------    ---------------
+             |                  |                  |
+             v                  v                  v
+          Load 1             Load 2             Load 3
+```
+_Caption: View of the network with all the different components_
 
 ## Task 2: Load-flow analysis
 
