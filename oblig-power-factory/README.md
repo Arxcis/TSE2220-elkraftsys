@@ -13,28 +13,28 @@ This work contains:
 ## Task 1: Network Configuration
 
 ```
-         --------
-         | Grid |
-         --------
-             |
-     ---------------
-     Trafo 1 | 132kV
-             O
-             O
-             |  11kV
-     ---------------   
-             |
-     Cable 1 |   |--- Cable 2 ---|--- Cable 3 -----|
-             |   |               |                 |    
-     ---------------    ---------------    --------------- 
-     Trafo 2 | 11kV     Trafo 3 | 11kV     Trafo 4 | 11kV
-             O                  O                  O
-             O                  O                  O
-             | 230V             | 230V             | 230V
-     ---------------    ---------------    ---------------
-             |                  |                  |
-             v                  v                  v
-          Load 1             Load 2             Load 3
+               --------
+               | Grid |
+               --------
+                   |
+     Bus 1 ---------------
+           Trafo 1 | 132kV
+                   O
+                   O
+                   |  11kV
+      Bus 2 ---------------   
+                   |
+           Cable 1 |   |--- Cable 2 ---------------|--- Cable 3 ---------------|
+                   |   |                           |                           |    
+   Area 1 HV ---------------     Area 2 HV ---------------   Area 3 HV --------------- 
+             Trafo 2 | 11kV                Trafo 3 | 11kV              Trafo 4 | 11kV
+                     O                             O                           O
+                     O                             O                           O
+                     | 230V                        | 230V                      | 230V
+   Area 1 LV ---------------     Area 2 LV ---------------   Area 3 LV ---------------
+                     |                             |                           |
+                     v                             v                           v
+                  Load 1                         Load 2                      Load 3
 ```
 _Caption: View of the network with all the different components_
 
