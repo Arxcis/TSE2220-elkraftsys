@@ -6,9 +6,9 @@ This work accounts for 10% of the total grade of the subject TSE2220. It uses th
 
 This work contains:
 
-- A "README.pdf"-file - containing the text you are currently reading.
-- A "network-configuration.pfd"-file (Power factory data file) containing the 11kV network fully configured and ready to run simulations.
-- A "network-short-circuit-analysis-by-hand.py"-file - which contains the shortcut-analysis using the impedance-method, done first by hand, and then formalized into a python-script.
+- A "README.pdf"-file      - containing the text you are currently reading.
+- "task2-load-analysis.py" - which contains the load-analysis using Gauss-Siedel-method, formalized into a python-script.
+- "task3-short-circuit.py" - which contains the shortcut-analysis using the impedance-method, formalized into a python-script.
 
 ## Task 1: Network Configuration
 ```
@@ -100,8 +100,7 @@ Det er anbefalt å plassere 200kW last i Area 1, da dette vil føre til lavest s
 
 ### 2c) Change length of the cable 1 from 200m to 16 000m
 
-After changing the cable from 200m to 16km, we do not have a satisfactory network anymore. The voltage drop delivered to all consumers now exceed 6% in Area1 and 7% in Area 2 and 3. This is way above the recommended NEK maximum of 5%. Consider upgrading the cross-sectional area of Cable1, or increase the voltage to 22kV or more to lower the voltage drop.
-
+After changing the cable from 200m to 16km, we do not have a satisfactory network anymore. The voltage drop delivered to all consumers now exceed 6% in Area1 and 7% in Area 2 and 3. This is way above the recommended NEK maximum of 5%. Consider upgrading the cross-sectional area of Cable1, or increase the voltage to 22kV or more to lower the voltage drop below 5% at least, and ideally below 3%.
 ```sh
 	Task 2c): Change length of the cable 1 from 200m to 16 000m
 
@@ -114,9 +113,9 @@ After changing the cable from 200m to 16km, we do not have a satisfactory networ
     |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
 ```
 
-### 2d) How much active power losses are?
+### 2d) How much active power losses are there in 2c)?
 
-- When running the 2c)-simulation?
+The active
 
 ```
 	Task 2d): How much active power losses are there when running 2c)?
