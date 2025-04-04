@@ -4,59 +4,46 @@ TSE2220: Oblig Power factory / Task3 Short-circuit analysis
 Student: Jonas (267431@usn.no)
 ------------------------------------------------------------------------------
 """
+from task1_configure_network import Network, configure_network
+from numpy import array, sqrt
 
 def main():
+
     # Basic network 
-    short_circuit(Sgrid_min = 60e6, Sgrid_max = 100e6, XT1merke = 0.03)
-    
+    net = configure_network(Sgrid_min = 60e6, Sgrid_max = 100e6, Ztrafo1_pu = 0.03j)
+    short_circuit(net)
+
     # Changing external grid to have 10x more short circuit power
-    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.03)
+    net = configure_network(Sgrid_min = 600e6, Sgrid_max = 1000e6, Ztrafo1_pu = 0.03j)
+    short_circuit(net)
 
     # Changing Trafo 1 to have 10% more short circuit impedance
-    short_circuit(Sgrid_min = 600e6, Sgrid_max = 1000e6, XT1merke = 0.13)
+    net = configure_network(Sgrid_min = 600e6, Sgrid_max = 1000e6, Ztrafo1_pu = 0.13j)
+    short_circuit(net)
 
 
-def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
+def short_circuit(net: Network):
     print("---------------------------------")
-    print(f"Grid min: {Sgrid_min:.3g}, Grid max: {Sgrid_max:.3g}")
+    print(f"Grid min: {net.Sgrid_min:.3g}, Grid max: {net.Sgrid_max:.3g}")
     print("---------------------------------")
 
     # Base
-    Sbase = 40e6  # MVA
+    Sbase = net.Sbase  # MVA
     Vbase = 132e3 # kV
-    Xbase = Vbase**2 / Sbase # Antar at X ~= Z og bruker bare X videre. Gjør denne antagelsen siden har ingen informasjon fra nettet som sier noe om cosfi og forholdet mellom X og Z.
 
     # Gridreaktanser
-    Xgrid_min = Sbase / Sgrid_min 
-    Xgrid_max = Sbase / Sgrid_max
+    Xgrid_min = Sbase / net.Sgrid_min 
+    Xgrid_max = Sbase / net.Sgrid_max
 
     # Traforeaktanser
-    def xtrafo(Xmerke, Smerke, Sny):
-        return Xmerke * (Sny / Smerke)
-
-    XT1 = xtrafo(Xmerke=XT1merke, Smerke=Sbase, Sny=Sbase) 
-    XT2 = xtrafo(Xmerke=0.06, Smerke=0.4e6, Sny=Sbase)
-    XT3 = xtrafo(Xmerke=0.06, Smerke=0.7e6, Sny=Sbase)
-    XT4 = xtrafo(Xmerke=0.06, Smerke=2.0e6, Sny=Sbase)
-
+    XT1, XT2, XT3, XT4 = abs(net.Ytrafos_pu**-1)
     print(" | ".join([f"XTrafo{i+1}: {x:.3g}" for i,x in enumerate([XT1, XT2, XT3, XT4])]))
 
-    # Kabelreaktanser
-    def xcable(km, Vb):
-        """For kabel flat forlegning, kabelavstand 70mm og 150mm2 tverrsnitt"""
-        XCable_km = 0.20  # Ohm/km - flat forlegning (ikke trekant).
-        RCable_km = 0.124 # Ohm/km 
-        return ((RCable_km*km)**2 + (XCable_km*km)**2)**0.5 / (Vb**2 / Sbase) 
-
-    XCable1 = xcable(km = 0.2, Vb=11e3)
-    XCable2 = xcable(km = 2.0, Vb=11e3)
-    XCable3 = xcable(km = 1.0, Vb=11e3)
-
+    XCable1, XCable2, XCable3 = abs(net.Ycables_pu**-1)
     print(" | ".join([f"XCable{i+1}: {x:.3g}" for i,x in enumerate([XCable1, XCable2, XCable3])]))
 
 
     # Kortslutningsreaktanser
-    from numpy import array
     Xkss = XT1 + XCable1 + array([
         0,             # Area 1 HV
         XT2,           # Area 1 LV
@@ -69,10 +56,8 @@ def short_circuit(Sgrid_min, Sgrid_max, XT1merke):
     Xkss_min = Xgrid_min + Xkss
     Xkss_max = Xgrid_max + Xkss
 
-    from math import sqrt
-
     # Kortslutningsstrømmer min og max
-    Vkss = array([11e3, 0.230e3, 11e3, 0.230e3, 11e3, 0.230e3])
+    Vkss = net.Vbases[2:]
 
     Skss_min_base = Sbase / Xkss_min
     Ikss_min_base = Skss_min_base / (sqrt(3) * Vbase)
