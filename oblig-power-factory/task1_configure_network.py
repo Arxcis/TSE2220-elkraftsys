@@ -10,24 +10,16 @@ from numpy import array, ndarray
 
 @dataclass
 class Network():
-    """Contains only the static part of the network, before any loads are attached and voltages applied"""
+    """Contains only the static parts of the network, before any voltage is applied"""
     Sgrid_min: float
     Sgrid_max: float
     Sbase: float
     Vbase: ndarray
-    
-    # Loads
     Sload_pu: ndarray
-
-    # Trafos
     Strafo_max: ndarray
     Ytrafo_pu: ndarray
-    
-    # Cables
     Lcable_km: ndarray
     Ycable_pu: ndarray
-
-    # Ybus 8x8 matrix
     Ybus_pu: ndarray
 
 def configure_network(
