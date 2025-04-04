@@ -69,18 +69,32 @@ jonas@pop-os:~/git/TSE2220-elkraftsys/oblig-power-factory$ python task2-power-fl
 
 #### Undesøker endring i spenning før og etter last settes inn
 
-| Vactual [V]       | Area1LV | Area2LV | Area3LV |
-|-------------------|---------|---------|---------|
-| Vfør +0kW    [V]  | 228     | 226     | 225     |
-| Vetter +200kW [V] | 226     | 224     | 224     |
+Tabell under viser at å sette inn en ekstra 200kW last i område 1, gir et totalt spenningsfall levert til forbruker på -4V eller -1.7%. Om lasten settes inn i enten område 2 eller 3 blir spenningsfallet levert til forbruker i begge disse områdene på -6V eller -2.6%. Dette er et akseptabelt fall for det meste av utstyr. NEK400 anbefaler maksimalt spenningsfall på 5% på generell basis og 2-3% spesifikt for motorer. Tallene taler til fordel for å legge til 200kW last til Area 1, fordi dette fører til minst spenningsfall levert til forbruker, bare 1.7%. Om lasten legges til område 2 eller 3 blir spenningsfallet levert i grenseland for det som er anbefalt for motorer.
 
 
-#### Undersøker trafo lastprosent av max (merkeeffekt)
+| Vactual [V]        | Area1LV | Area2LV | Area3LV |
+|--------------------|---------|---------|---------|
+| Vfør +0kW      [V] | 228     | 226     | 225     |
+| Vetter +200kW  [V] | 226     | 224     | 224     |
+| Vfall fra 230V [V] | -4      | -6      | -6      |
+| Vfall fra 230V [%] | -1.7%   | -2.6%   | -2.6%   |
+
+
+
+#### Undersøker utnyttelsesgrad i trafo (lasteffekt / merkeeffekt)
+
+Om vi ser på trafo sin utnyttelsesgrad, vil den bli påvirket veldig ulikt avhengig av hvor lasten plasseres. For Area1 øker utnyttelsesgrad til trafo fra 39.1% til 91.1% (+52%) økning. På en måte er dette positivt. Area 1 sin trafo var underutnyttet før lasten ble lagt til. Å legge til lasten til area 1 skaper en mer jevn fordeling av belastningen på tvers av alle 3 områdene, med 91%, 60% og 78% belastning på de respektive trafoene.
 
 | StrafoLoad/Max [%]  | Area1LV | Area2LV | Area3LV |
 |---------------------|---------|---------|---------|
 | før   +0kW    [%]   | 39.1    | 59.5    | 78.1    |
 | etter +200kW  [%]   | 91.1    | 89.3    | 88.5    |
+| delta         [%]   | +52%    | +29.8%  | +10.4%  |
+
+
+#### Konklusjon
+
+Det er anbefalt å plassere 200kW last i Area 1, da dette vil føre til lavest spenningsfall levert til forbruker i alle 3 områder og en jevnest mulig belastningsgrad om en sammenligner alle de 3 ulike trafoene.
 
 
 #### Konklusjon
