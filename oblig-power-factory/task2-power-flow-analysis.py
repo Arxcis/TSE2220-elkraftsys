@@ -255,7 +255,9 @@ def active_power_losses(Ycable, Vbus):
     """)
 
 
+#
 # Print helpers
+#
 def title(text):
     print("\n\t"+text)
 def line(count):

@@ -11,7 +11,6 @@ This work contains:
 - A "network-short-circuit-analysis-by-hand.py"-file - which contains the shortcut-analysis using the impedance-method, done first by hand, and then formalized into a python-script.
 
 ## Task 1: Network Configuration
-
 ```
                --------
                | Grid |
@@ -46,63 +45,48 @@ _Caption: View of the network with all the different components_
 ```sh
 jonas@pop-os:~/git/TSE2220-elkraftsys/oblig-power-factory$ python task2-power-flow-analysis.py
 
-	Task 2a): Bus voltage and power flow simulation
+	Task 2a): Do a load flow simulation
 
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    |              | Bus 1    | Bus 2    | Bus 3    | Bus 4    | Bus 5    | Bus 6    | Bus 7    | Bus 8    |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    | Vnominal [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
-    | Vactual  [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      228 | 1.09e+04 |      226 | 1.09e+04 |      225 |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
+    |              | Area1HV  | Area1LV  | Area2HV  | Area2LV  | Area3HV  | Area3LV  |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
+    | Vnominal [V] |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
+    | Vactual  [V] |  1.1e+04 |      228 | 1.09e+04 |      226 | 1.09e+04 |      225 |
+    | Vactual [pu] |    0.999 |    0.992 |    0.993 |    0.982 |    0.991 |    0.976 |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
+
+    |-------------------- | -------- | -------- | -------- |
+    |                     | Area 1   | Area 2   | Area 3   |
+    |---------------------| -------- | -------- | -------- |
+    | StrafoMax  [VA]     |    4e+05 |    7e+05 |    2e+06 |
+    | StrafoLoad [VA]     | 1.56e+05 | 4.17e+05 | 1.56e+06 |
+    | StrafoLoad/Max [%]  |     39.1 |     59.5 |     78.1 |
+    |---------------------| -------- | -------- | -------- |
 ```
 
 ### 2b) Add 200kW to the system to either Area 1, 2 or 3
 
 
-#### Undesøker endring i spnning før og etter last settes inn
+#### Undesøker endring i spenning før og etter last settes inn
 
-Kjører lastflytanalyse på alle 3 varianter:
+| Vactual [V]       | Area1LV | Area2LV | Area3LV |
+|-------------------|---------|---------|---------|
+| Vfør +0kW    [V]  | 228     | 226     | 225     |
+| Vetter +200kW [V] | 226     | 224     | 224     |
 
-| Area | Før | Etter |
-|------|-----|-------|
-| 1    | 228V | 226V |
-| 2    | 226V | 224V |
-| 3    | 225V | 224V |
+
+#### Undersøker trafo lastprosent av max (merkeeffekt)
+
+| StrafoLoad/Max [%]  | Area1LV | Area2LV | Area3LV |
+|---------------------|---------|---------|---------|
+| før   +0kW    [%]   | 39.1    | 59.5    | 78.1    |
+| etter +200kW  [%]   | 91.1    | 89.3    | 88.5    |
+
+
+#### Konklusjon
 
 Resultatene er ikke så ille. Vi har fortsatt "god spenning". Innenfor 10% av nominell.
-
-```sh
-	Task 2b-1): Add 200kW load to Area 1
-
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    |              | Bus 1    | Bus 2    | Bus 3    | Bus 4    | Bus 5    | Bus 6    | Bus 7    | Bus 8    |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    | Vnominal [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
-    | Vactual  [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      226 | 1.09e+04 |      226 | 1.09e+04 |      225 |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-
-
-	Task 2b-2): Add 200kW load to Area 2
-
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    |              | Bus 1    | Bus 2    | Bus 3    | Bus 4    | Bus 5    | Bus 6    | Bus 7    | Bus 8    |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    | Vnominal [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
-    | Vactual  [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      228 | 1.09e+04 |      224 | 1.09e+04 |      224 |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-
-
-	Task 2b-3): Add 200kW load to Area 3
-
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    |              | Bus 1    | Bus 2    | Bus 3    | Bus 4    | Bus 5    | Bus 6    | Bus 7    | Bus 8    |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    | Vnominal [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
-    | Vactual  [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      228 | 1.09e+04 |      226 | 1.09e+04 |      224 |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-```
-
-#### Undersøker effektbelastning i trafo
+fo
 
 
 - Which area would I put the load?
