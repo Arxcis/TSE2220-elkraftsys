@@ -21,17 +21,20 @@ def main():
     # Task 2b) - compare adding a 200kW load to either Area 1, 2 or 3
     #
     title("Task 2b-1): Add 200kW load to Area 1")
-    Vbus = load_flow(net, extra_p_area1 = 200e3)
+    net = configure_network(Pextra_area1 = 200e3)
+    Vbus = load_flow(net)
     trafo_utilization(net, Vbus)
     
     
     title("Task 2b-2): Add 200kW load to Area 2")
-    Vbus = load_flow(net, extra_p_area2 = 200e3)
+    net = configure_network(Pextra_area2 = 200e3)
+    Vbus = load_flow(net)
     trafo_utilization(net, Vbus)
 
 
     title("Task 2b-3): Add 200kW load to Area 3")
-    Vbus = load_flow(net, extra_p_area3 = 200e3)
+    net = configure_network(Pextra_area3 = 200e3)
+    Vbus = load_flow(net)
     trafo_utilization(net, Vbus)
 
     #
@@ -48,37 +51,13 @@ def main():
     active_cable_losses(net, Vbus)
  
 
-def load_flow(net: Network, extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0):
+def load_flow(net: Network):
     """
     Does a load flow using Gauss-Siedel-numerical approximation method, for a given network and load. 
 
         Returns the resulting per unit voltages -> Vbus_pu
     """
     
-    #
-    # Step 1: Setup the loads for each bus.
-    #           * Generators + positive sign.
-    #           * Loads - negative sign
-    #
-    def s_pu(p, cosfi):
-        from math import sin, acos
-
-        fi = acos(cosfi)
-        s = p/cosfi
-        q = 1j * s * sin(fi)
-
-        return (p + q) / net.Sbase
-
-    Sload = array([
-        0,
-        0,
-        0,
-        -s_pu(p=150e3, cosfi=0.96) - s_pu(p = extra_p_area1, cosfi=0.96),
-        0,
-        -s_pu(p=400e3, cosfi=0.96) - s_pu(p = extra_p_area2, cosfi=0.96),
-        0,
-        -s_pu(p=1500e3, cosfi=0.96) - s_pu(p = extra_p_area3, cosfi=0.96),
-    ])
 
     #
     # Step 2: Use Gauss-Siedel method to numerically approximate V
@@ -86,15 +65,15 @@ def load_flow(net: Network, extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 
     
     N = 10_000
     Vbus_pu = ones(8) # V = [1pu, 1pu, 1pu, 1pu, ...]
-    Yii = array([net.Ybus_pu[i][i] for i in range(8)])
+    Yii_pu = array([net.Ybus_pu[i][i] for i in range(8)])
 
     for _ in range(N):
-        I = conjugate(Sload / Vbus_pu)
+        I_pu = conjugate(net.Sload_pu / Vbus_pu)
         
-        YVij = net.Ybus_pu.dot(Vbus_pu)
-        YVii = Yii*Vbus_pu
+        YVij_pu = net.Ybus_pu.dot(Vbus_pu)
+        YVii_pu = Yii_pu*Vbus_pu
 
-        Vbus_pu = (1/Yii) * (I - YVij + YVii)
+        Vbus_pu = (1/Yii_pu) * (I_pu - YVij_pu + YVii_pu)
 
         # Always reset slack-bus to 1pu
         Vbus_pu[0] = 1

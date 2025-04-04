@@ -15,7 +15,9 @@ class Network():
     Sgrid_max: float
     Sbase: float
     Vbase: ndarray
-    Ybus_pu: ndarray
+    
+    # Loads
+    Sload_pu: ndarray
 
     # Trafos
     Strafo_max: ndarray
@@ -25,10 +27,20 @@ class Network():
     Lcable_km: ndarray
     Ycable_pu: ndarray
 
+    # Ybus 8x8 matrix
+    Ybus_pu: ndarray
 
-def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_pu=0.03) -> Network:
+def configure_network(
+        Lcable1_km=0.2,
+        Sgrid_min=60e6,
+        Sgrid_max=100e6, 
+        Ztrafo1_pu=0.03,
+        Pextra_area1 = 0,
+        Pextra_area2 = 0,
+        Pextra_area3 = 0,
+    ) -> Network:
     """
-    The network we want to configure:
+    The default network:
                --------
                | Grid |  min/max: 60/100MVA
                --------
@@ -53,11 +65,14 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
                 Load 1                           Load 2                      Load 3
 
     """
-
+    
+    #
+    # Step 0: Select an Sbase
+    #
     Sbase = 40e6
 
     #
-    # Step 1: Generate the Ybus matrix for the whole network with 8 buses (8x8 matrix)
+    # Step 1: Configure the trafo admittances
     #
     def ytrafo_pu(s, z_pu):
         z_pu_based = z_pu * (Sbase/s)
@@ -69,6 +84,9 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
                          ytrafo_pu(z_pu=0.06j, s=2.0e6)
     
 
+    #
+    # Step 2: Configure the trafo cable admittances
+    #
     def ycable_pu(km, vbase):
         zbase = vbase**2/Sbase
         r_pu = 0.124*km / zbase
@@ -79,6 +97,10 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
     Lcable_km = array([Lcable1_km, 2.0, 1.0])
     YC1, YC2, YC3 = ycable_pu(km=Lcable_km, vbase=11e3)
 
+
+    #
+    # Step 3: Configure the Ybus 8x8 matrix 
+    #
     Ybus_pu = array([
     # Bus   1,         2,             3,    4,              5,    6,         7,    8
         [+YT1,      -YT1,             0,    0,              0,    0,         0,    0], # 1. bus
@@ -91,10 +113,39 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
         [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8.
     ])
     
-    net = Network(
+    #
+    # Step 4: Setup the loads for each bus.
+    #           * Generators + positive sign.
+    #           * Loads - negative sign
+    #
+    def s_pu(p, cosfi):
+        from math import sin, acos
+
+        fi = acos(cosfi)
+        s = p/cosfi
+        q = 1j * s * sin(fi)
+
+        return (p + q) / Sbase
+
+    Sload = array([
+        0,
+        0,
+        0,
+        -s_pu(p=150e3, cosfi=0.96) - s_pu(p = Pextra_area1, cosfi=0.96),
+        0,
+        -s_pu(p=400e3, cosfi=0.96) - s_pu(p = Pextra_area2, cosfi=0.96),
+        0,
+        -s_pu(p=1500e3, cosfi=0.96) - s_pu(p = Pextra_area3, cosfi=0.96),
+    ])
+
+    #
+    # Step 5: Init the Network object and return
+    # 
+    return Network(
         Sgrid_min = Sgrid_min,
         Sgrid_max = Sgrid_max,
         Sbase = Sbase,
+        Sload_pu = Sload,
         Strafo_max = array([40e6, 400e3, 700e3, 2000e3]),
         Vbase = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230]),
         Ybus_pu = Ybus_pu,
@@ -103,10 +154,8 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
         Lcable_km=Lcable_km
     )
     
-    return net
 
-
-if __name__ == "__main__":
+if __name__ == "__main__":#
     net = configure_network()
 
     print(net)
