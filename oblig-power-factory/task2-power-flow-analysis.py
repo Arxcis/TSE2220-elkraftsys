@@ -3,32 +3,120 @@
 TSE2220: Oblig Power factory / Task2 Power-flow analysis "by hand"
 Student: Jonas (267431@usn.no)
 ------------------------------------------------------------------------------
+  
+Network configuration:
+
+               --------
+               | Grid |
+               --------
+                   |
+     Bus 1 ---------------
+           Trafo 1 | 132kV
+                   O
+                   O
+                   |  11kV
+     Bus 2 ---------------   
+                   |
+           Cable 1 |   |--- Cable 2 ---------------|--- Cable 3 ---------------|
+                   |   |                           |                           |    
+ Area 1 HV ----------------       Area 2 HV ---------------   Area 3 HV --------------- 
+            Trafo 2 | 11kV                 Trafo 3 | 11kV              Trafo 4 | 11kV
+                    O                              O                           O
+                    O                              O                           O
+                    | 230V                         | 230V                      | 230V
+ Area 1 LV -----------------      Area 2 LV ---------------   Area 3 LV ---------------
+                   |                               |                           |
+                   v                               v                           v
+                Load 1                           Load 2                      Load 3
+
 """
 
 def main():
-
-    title("Task 2a): Bus voltage and power flow simulation")
-    load_flow()
+    #
+    # Task 2a)
+    #
+    title("Task 2a): Do a load flow simulation")
+    _, Vbus, Sbase,_ = load_flow()
+    trafo_utilization(Sbase, Vbus)
     
+    #
+    # Task 2b)
+    #
     title("Task 2b-1): Add 200kW load to Area 1")
-    load_flow(extra_p_area1 = 200e3)
+    _, Vbus, Sbase,_ = load_flow(extra_p_area1 = 200e3)
+    trafo_utilization(Sbase, Vbus)
     
     
     title("Task 2b-2): Add 200kW load to Area 2")
-    load_flow(extra_p_area2 = 200e3)
+    _, Vbus, Sbase,_ = load_flow(extra_p_area2 = 200e3)
+    trafo_utilization(Sbase, Vbus)
 
 
     title("Task 2b-3): Add 200kW load to Area 3")
-    load_flow(extra_p_area3 = 200e3)
+    _, Vbus, Sbase,_ = load_flow(extra_p_area3 = 200e3)
+    trafo_utilization(Sbase, Vbus)
 
-
+    #
+    # Task 2c)
+    #
     title("Task 2c): Change length of the cable 1 from 200m to 16 000m")
-    Ycable, Vbus = load_flow(cable1_km=16.0)
+    Ycable, Vbus, _, Vbases = load_flow(cable1_km=16.0)
 
-
+    #
+    # Task 2d)
+    #
     title("Task 2d): How much active power losses are there when running 2c)?")
-    active_power_losses(Ycable, Vbus)
+    active_power_losses(Ycable, Vbus*Vbases)
+    
 
+def trafo_utilization(Sbase, Vbus):
+    """
+                    |   |                          |                           |    
+ Area 1 HV ----------------       Area 2 HV ---------------   Area 3 HV --------------- 
+            Trafo 2 | 11kV                 Trafo 3 | 11kV              Trafo 4 | 11kV
+                    O 400kVA                       O 700kVA                    O 2000kVA
+                    O 0.06j                        O 0.06j                     O 0.06j
+                    | 230V                         | 230V                      | 230V
+ Area 1 LV -----------------      Area 2 LV ---------------   Area 3 LV ---------------
+                   |                               |                           |
+                   v                               v                           v
+                Load 1                           Load 2                      Load 3
+    """
+    from numpy import array, conjugate, sqrt
+
+    _, __, Varea1HV, Varea1LV, Varea2HV, Varea2LV, Varea3HV, Varea3LV = Vbus
+    StrafoRating = array([400e3, 700e3, 2000e3])
+    VbaseLV = 230
+    VbaseHV = 11e3
+    VtrafoHV_pu = array([Varea1HV, Varea2HV, Varea3HV]) 
+    VtrafoLV_pu = array([Varea1LV, Varea2LV, Varea3LV])
+    
+    # Impedance through each trafo
+    Ztrafo_pu = 0.06j * (Sbase / StrafoRating)
+
+    # Voltage drop across each trafo
+    ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
+
+    # Current through each trafo
+    Itrafo_pu = ΔVtrafo_pu / Ztrafo_pu
+    
+    # Assume that all current is discharged to 0V at the low voltage. This gives the trafo power draw. 
+    ItrafoHV = Itrafo_pu * (Sbase / VbaseHV)
+    ItrafoLV = Itrafo_pu * (Sbase / VbaseLV) 
+    StrafoHV = VtrafoHV_pu * VbaseHV * conjugate(ItrafoHV)
+    StrafoLV = VtrafoLV_pu * VbaseLV * conjugate(ItrafoLV)
+
+    StrafoLoadPercent = (abs(StrafoLV) / StrafoRating )*100
+
+    print(f"""
+    |---------------- | {line(3)} |
+    |                 | {names("Area", 3)} |
+    |-----------------| {line(3)} |
+    | StrafoMax  [VA] | {abs_values(StrafoRating)} |
+    | StrafoLoad [VA] | {abs_values(StrafoLV)} |
+    | StrafoLoad [%]  | {abs_values(StrafoLoadPercent)} |
+    |-----------------| {line(3)} |
+    """) 
 
 
 def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km = 0.2):
@@ -130,17 +218,17 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
     # Step 5: Print results
     #
     print(f"""
-    |--------------| {line(8)} |
-    |              | {names("Bus", 8)} |
-    |--------------| {line(8)} |
-    | Vnominal [V] | {abs_values(Vbases)} |
-    | Vactual  [V] | {abs_values(Vbus*Vbases)} |
-    | Vactual [pu] | {abs_values(Vbus)} |
-    |--------------| {line(8)} |
+    |--------------| {line(6)} |
+    |              | {areas()} |
+    |--------------| {line(6)} |
+    | Vnominal [V] | {abs_values(Vbases[2:])} |
+    | Vactual  [V] | {abs_values((Vbus*Vbases)[2:])} |
+    | Vactual [pu] | {abs_values(Vbus[2:])} |
+    |--------------| {line(6)} |
     """)
 
     Ycable = array([YC1,YC2,YC3]) / (11e3**2/Sbase)
-    return Ycable, Vbus*Vbases
+    return Ycable, Vbus, Sbase, Vbases
 
 
 def active_power_losses(Ycable, Vbus):
@@ -174,6 +262,8 @@ def line(count):
     return " | ".join("--------" for _ in range(count))
 def names(name, count):
     return " | ".join(f"{f"{name} {i}":<8}" for i in range(1, count+1))
+def areas():
+    return " | ".join(f"{f"{i}":<8}" for i in ["Area1HV", "Area1LV", "Area2HV", "Area2LV", "Area3HV", "Area3LV"])
 def real_values(values): 
     return" | ".join(f"{x.real:>8.3g}" if abs(x) > 1e-6 else f"{0:>8}" for x in values)
 def imag_values(values): 
