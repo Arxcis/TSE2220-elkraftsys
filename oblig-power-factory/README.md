@@ -97,24 +97,6 @@ Om vi ser på trafo sin utnyttelsesgrad, vil den bli påvirket veldig ulikt avhe
 Det er anbefalt å plassere 200kW last i Area 1, da dette vil føre til lavest spenningsfall levert til forbruker i alle 3 områder og en jevnest mulig belastningsgrad om en sammenligner alle de 3 ulike trafoene.
 
 
-#### Konklusjon
-
-Resultatene er ikke så ille. Vi har fortsatt "god spenning". Innenfor 10% av nominell.
-fo
-
-
-- Which area would I put the load?
-- Here are some things worth considering:
-
-  1. Is the remaining capacity of the upstream trafos sufficient to support this new load?
-  2. Which trafo has the most/least available capacity?
-  3. What would the trafo utilization rate be for Area 1,2 and 3, before and after insertion of the 200kW load?
-  4. What should be the deciding factor? Utilization rate or balacing spare capacity?
-
-     - Having a balanced spare capacity in both area 1, 2 and 3 gives flexibility of where future load increases could be located. On the downside, this would decrease the maximum load. Keeping a big spare capacity in one area, and maxing out the two other areas might be beneficial if one wants to attract business with high power demands. If all the areas are averaged out, none have enough spare capacity to compete for this big customer.
-
-     - Keeping utilization rate below 90% may increase longevity of components.
-     - It comes down to priorities and politics in the end. What should be the deciding factor?
 
 ### 2c) Change length of the cable 1 from 200m to 16 000m
 
