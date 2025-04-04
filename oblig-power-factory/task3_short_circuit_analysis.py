@@ -9,15 +9,21 @@ from numpy import array, sqrt
 
 def main():
 
-    # Basic network 
+    #
+    # Task 3a) Do short circuit on Basic network 
+    #
     net = configure_network(Sgrid_min = 60e6, Sgrid_max = 100e6, Ztrafo1_pu = 0.03j)
     short_circuit(net)
 
-    # Changing external grid to have 10x more short circuit power
+    #
+    # Task 3d) Do short circuit when grid has 10x more short circuit power
+    #
     net = configure_network(Sgrid_min = 600e6, Sgrid_max = 1000e6, Ztrafo1_pu = 0.03j)
     short_circuit(net)
 
-    # Changing Trafo 1 to have 10% more short circuit impedance
+    #
+    # Task 3f) Short circuit after increaseing internal inductance of trafo1 from 3% -> 13%
+    #
     net = configure_network(Sgrid_min = 600e6, Sgrid_max = 1000e6, Ztrafo1_pu = 0.13j)
     short_circuit(net)
 

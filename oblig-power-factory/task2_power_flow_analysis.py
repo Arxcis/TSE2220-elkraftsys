@@ -58,11 +58,6 @@ def load_flow(net: Network):
         Returns the resulting per unit voltages -> Vbus_pu
     """
     
-
-    #
-    # Step 2: Use Gauss-Siedel method to numerically approximate V
-    #
-    
     N = 10_000
     Vbus_pu = ones(8) # V = [1pu, 1pu, 1pu, 1pu, ...]
     Yii_pu = array([net.Ybus_pu[i][i] for i in range(8)])
@@ -77,28 +72,20 @@ def load_flow(net: Network):
 
         # Always reset slack-bus to 1pu
         Vbus_pu[0] = 1
-        
-    #
-    # Step 3: Calculate total power flows
-    #
-    Ibases = net.Sbase / (Vbus_pu*net.Vbase * sqrt(3))
-    I = net.Ybus_pu.dot(Vbus_pu) * Ibases
 
-    #
-    # Step 4: Print results
-    #
+    # Print results
     Vnominal = net.Vbase[2:]
     Vactual  = (Vbus_pu*net.Vbase)[2:]
     Vactual_pu = Vbus_pu[2:]
 
     print(f"""
-    |--------------| {line(6)} |
+    |--------------| {line(len(Vnominal))} |
     |              | {areas()} |
-    |--------------| {line(6)} |
+    |--------------| {line(len(Vnominal))} |
     | Vnominal [V] | {abs_values(Vnominal)} |
     | Vactual  [V] | {abs_values(Vactual)} |
     | Vactual [pu] | {abs_values(Vactual_pu)} |
-    |--------------| {line(6)} |
+    |--------------| {line(len(Vnominal))} |
     """)
     
     return Vbus_pu
@@ -117,12 +104,13 @@ def trafo_utilization(net: Network, Vbus_pu: ndarray):
     ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
 
     # Current through each trafo
-    Itrafo_pu = ΔVtrafo_pu * net.Ytrafo_pu[1:]
+    Itrafo_pu = (ΔVtrafo_pu) * net.Ytrafo_pu[1:]
 
     # Assume that all current is discharged to 0V on the low voltage side of the trafo.
-    # This gives us the trafo power loading:
-    ItrafoLV = Itrafo_pu * (net.Sbase / VbaseLV) / sqrt(3)
-    StrafoLV = VtrafoLV_pu * VbaseLV * conjugate(ItrafoLV) * sqrt(3)
+    # This gives us the following trafo power loading:
+    Ibase = net.Sbase / (VbaseLV * sqrt(3))
+    ItrafoLV = Itrafo_pu * Ibase
+    StrafoLV = (VtrafoLV_pu * VbaseLV) * conjugate(ItrafoLV) * sqrt(3)
     StrafoLoadPercent = (abs(StrafoLV) / Strafo_max )*100
     
     # Print results
