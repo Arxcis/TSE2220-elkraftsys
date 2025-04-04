@@ -100,23 +100,19 @@ Det er anbefalt å plassere 200kW last i Area 1, da dette vil føre til lavest s
 
 ### 2c) Change length of the cable 1 from 200m to 16 000m
 
-- Display results like in 2a)
+After changing the cable from 200m to 16km, we do not have a satisfactory network anymore. The voltage drop delivered to all consumers now exceed 6% in Area1 and 7% in Area 2 and 3. This is way above the recommended NEK maximum of 5%. Consider upgrading the cross-sectional area of Cable1, or increase the voltage to 22kV or more to lower the voltage drop.
 
 ```sh
 	Task 2c): Change length of the cable 1 from 200m to 16 000m
 
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    |              | Bus 1    | Bus 2    | Bus 3    | Bus 4    | Bus 5    | Bus 6    | Bus 7    | Bus 8    |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-    | Vnominal [V] | 1.32e+05 |  1.1e+04 |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
-    | Vactual  [V] | 1.32e+05 |  1.1e+04 | 1.04e+04 |      216 | 1.03e+04 |      214 | 1.03e+04 |      212 |
-    |--------------| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
+    |              | Area1HV  | Area1LV  | Area2HV  | Area2LV  | Area3HV  | Area3LV  |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
+    | Vnominal [V] |  1.1e+04 |      230 |  1.1e+04 |      230 |  1.1e+04 |      230 |
+    | Vactual  [V] | 1.04e+04 |      216 | 1.03e+04 |      214 | 1.03e+04 |      212 |
+    | Vactual [pu] |    0.946 |    0.939 |     0.94 |    0.929 |    0.938 |    0.922 |
+    |--------------| -------- | -------- | -------- | -------- | -------- | -------- |
 ```
-
-- Does the power system still have a satisfactory network?
-- Consider the voltages on the busbars.
-    * Lengden på kabelen blir for lang med 11kV.
-    * Vurder å steppe opp spenningen fra 11kV -> 22kV over et så langt strekke.
 
 ### 2d) How much active power losses are?
 
