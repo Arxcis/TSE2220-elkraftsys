@@ -1,125 +1,53 @@
 """
 ------------------------------------------------------------------------------
-TSE2220: Oblig Power factory / Task2 Power-flow analysis "by hand"
+TSE2220: Oblig Power factory / Task2 Power-flow analysis
 Student: Jonas (267431@usn.no)
 ------------------------------------------------------------------------------
-  
-Network configuration:
+"""
 
+from dataclasses import dataclass, field
+from numpy import array, ndarray
+
+@dataclass
+class Network():
+    """Contains only the static part of the network, before any loads are attached and voltages applied"""
+    Sgridmin: float
+    Sgridmax: float
+    Sbase: float
+    Vbases: ndarray
+    StrafoMax: ndarray
+    Ytrafo_pu: ndarray
+    Ybus_pu: ndarray
+    Ycable_pu: ndarray
+
+def configure_network():
+    """
+    The network we want to configure:
                --------
-               | Grid |
+               | Grid |  min/max: 60/100MVA
                --------
                    |
      Bus 1 ---------------
            Trafo 1 | 132kV
-                   O
-                   O
-                   |  11kV
+                   O 40MVA
+                   O j0.03
+                   | 11kV
      Bus 2 ---------------   
-                   |
-           Cable 1 |   |--- Cable 2 ---------------|--- Cable 3 ---------------|
-                   |   |                           |                           |    
- Area 1 HV ----------------       Area 2 HV ---------------   Area 3 HV --------------- 
-            Trafo 2 | 11kV                 Trafo 3 | 11kV              Trafo 4 | 11kV
-                    O                              O                           O
-                    O                              O                           O
-                    | 230V                         | 230V                      | 230V
- Area 1 LV -----------------      Area 2 LV ---------------   Area 3 LV ---------------
-                   |                               |                           |
-                   v                               v                           v
-                Load 1                           Load 2                      Load 3
-
-"""
-
-def main():
-    #
-    # Task 2a)
-    #
-    title("Task 2a): Do a load flow simulation")
-    _, Vbus, Sbase,_ = load_flow()
-    trafo_utilization(Sbase, Vbus)
-    
-    #
-    # Task 2b)
-    #
-    title("Task 2b-1): Add 200kW load to Area 1")
-    _, Vbus, Sbase,_ = load_flow(extra_p_area1 = 200e3)
-    trafo_utilization(Sbase, Vbus)
-    
-    
-    title("Task 2b-2): Add 200kW load to Area 2")
-    _, Vbus, Sbase,_ = load_flow(extra_p_area2 = 200e3)
-    trafo_utilization(Sbase, Vbus)
-
-
-    title("Task 2b-3): Add 200kW load to Area 3")
-    _, Vbus, Sbase,_ = load_flow(extra_p_area3 = 200e3)
-    trafo_utilization(Sbase, Vbus)
-
-    #
-    # Task 2c)
-    #
-    title("Task 2c): Change length of the cable 1 from 200m to 16 000m")
-    Ycable, Vbus, _, Vbases = load_flow(cable1_km=16.0)
-
-    #
-    # Task 2d)
-    #
-    title("Task 2d): How much active power losses are there when running 2c)?")
-    active_power_losses(Ycable, Vbus*Vbases)
-    
-
-def trafo_utilization(Sbase, Vbus):
-    """
-                    |   |                          |                           |    
+                   | 
+           Cable 1 |   |---- - Cable 2 2km --------|---- Cable 3 1km ----------| <-- (0.12 + j0.20) Ohm/km
+              200m |   |                           |                           |    
  Area 1 HV ----------------       Area 2 HV ---------------   Area 3 HV --------------- 
             Trafo 2 | 11kV                 Trafo 3 | 11kV              Trafo 4 | 11kV
                     O 400kVA                       O 700kVA                    O 2000kVA
-                    O 0.06j                        O 0.06j                     O 0.06j
+                    O j0.06                        O j0.06                     O j0.06
                     | 230V                         | 230V                      | 230V
  Area 1 LV -----------------      Area 2 LV ---------------   Area 3 LV ---------------
                    |                               |                           |
                    v                               v                           v
                 Load 1                           Load 2                      Load 3
+
     """
-    from numpy import array, conjugate, sqrt
 
-    _, __, Varea1HV, Varea1LV, Varea2HV, Varea2LV, Varea3HV, Varea3LV = Vbus
-    StrafoRating = array([400e3, 700e3, 2000e3])
-    VbaseLV = 230
-    VbaseHV = 11e3
-    VtrafoHV_pu = array([Varea1HV, Varea2HV, Varea3HV]) 
-    VtrafoLV_pu = array([Varea1LV, Varea2LV, Varea3LV])
-    
-    # Impedance through each trafo
-    Ztrafo_pu = 0.06j * (Sbase / StrafoRating)
-
-    # Voltage drop across each trafo
-    ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
-
-    # Current through each trafo
-    Itrafo_pu = ΔVtrafo_pu / Ztrafo_pu
-    
-    # Assume that all current is discharged to 0V at the low voltage. This gives the trafo power draw. 
-    ItrafoHV = Itrafo_pu * (Sbase / VbaseHV)
-    ItrafoLV = Itrafo_pu * (Sbase / VbaseLV) 
-    StrafoHV = VtrafoHV_pu * VbaseHV * conjugate(ItrafoHV)
-    StrafoLV = VtrafoLV_pu * VbaseLV * conjugate(ItrafoLV)
-
-    StrafoLoadPercent = (abs(StrafoLV) / StrafoRating )*100
-
-    print(f"""
-    |---------------- | {line(3)} |
-    |                 | {names("Area", 3)} |
-    |-----------------| {line(3)} |
-    | StrafoMax  [VA] | {abs_values(StrafoRating)} |
-    | StrafoLoad [VA] | {abs_values(StrafoLV)} |
-    | StrafoLoad [%]  | {abs_values(StrafoLoadPercent)} |
-    |-----------------| {line(3)} |
-    """) 
-
-
-def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km = 0.2):
     Sbase = 40e6
 
     #
@@ -147,7 +75,6 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
                     ycable_pu(km=1.0, vbase=11e3)
     
 
-    from numpy import array
     Ybus = array([
     # Bus   1,         2,             3,    4,              5,    6,         7,    8
         [+YT1,      -YT1,             0,    0,              0,    0,         0,    0], # 1. bus
@@ -159,9 +86,74 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
         [   0,         0,             0,    0,           -YC3,    0, (YC3+YT4), -YT4], # 7.
         [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8.
     ])
+    
+    net = Network(
+        Sgridmin = 60e6,
+        Sgridmax = 100e6,
+        Sbase = Sbase,
+        Strafo = array([40e3, 400e3, 700e3, 2000e3]),
+        Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230]),
+        Ybus_pu = Ybus,
+        Ytrafo_pu = array([YT1, YT2, YT3, YT4]),
+        Ycable_pu = array([YC1, YC2, YC3]),
+    )
+    
+    return net
+
+
+
+def main():
+    #
+    # Task 1 - Configure network
+    #
+    net = configure_network()
 
     #
-    # Step 2: Setup the loads for each bus.
+    # Task 2a)
+    #
+    title("Task 2a): Do a load flow simulation")
+    Vbus = load_flow(net)
+    trafo_utilization(net, Vbus)
+    
+    #
+    # Task 2b)
+    #
+    title("Task 2b-1): Add 200kW load to Area 1")
+    Vbus = load_flow(extra_p_area1 = 200e3)
+    trafo_utilization(net, Vbus)
+    
+    
+    title("Task 2b-2): Add 200kW load to Area 2")
+    Vbus = load_flow(extra_p_area2 = 200e3)
+    trafo_utilization(net, Vbus)
+
+
+    title("Task 2b-3): Add 200kW load to Area 3")
+    Vbus = load_flow(extra_p_area3 = 200e3)
+    trafo_utilization(net, Vbus)
+
+    #
+    # Task 2c)
+    #
+    title("Task 2c): Change length of the cable 1 from 200m to 16 000m")
+    Vbus = load_flow(cable1_km=16.0)
+
+    #
+    # Task 2d)
+    #
+    title("Task 2d): How much active power losses are there when running 2c)?")
+    active_cable_losses(net, Vbus)
+ 
+
+def load_flow(net: Network, extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km = 0.2):
+    """Do a load flow using Gauss-Siedel-numerical approximation method,
+        for a given network and load. 
+
+        Returns the resulting voltages - the Vbus"""
+    from numpy import array
+    
+    #
+    # Step 1: Setup the loads for each bus.
     #           * Generators + positive sign.
     #           * Loads - negative sign
     #
@@ -172,7 +164,7 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
         s = p/cosfi
         q = 1j * s * sin(fi)
 
-        return (p + q) / Sbase
+        return (p + q) / net.Sbase
 
     Sload = array([
         0,
@@ -186,19 +178,18 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
     ])
 
     #
-    # Step 3: Use Gauss-Siedel method to numerically approximate V
+    # Step 2: Use Gauss-Siedel method to numerically approximate V
     #
     from numpy import conjugate, ones, sqrt, array
     
     N = 10_000
     Vbus = ones(8) # V = [1pu, 1pu, 1pu, 1pu, ...]
     Yii = array([Ybus[i][i] for i in range(8)])
-    Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230])
 
     for _ in range(N):
         I = conjugate(Sload / Vbus)
         
-        YVij = Ybus.dot(Vbus)
+        YVij = net.Ybus.dot(Vbus)
         YVii = Yii*Vbus
 
         Vbus = (1/Yii) * (I - YVij + YVii)
@@ -207,31 +198,34 @@ def load_flow(extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 = 0, cable1_km
         Vbus[0] = 1
         
     #
-    # Step 4: Calculate total power flows
+    # Step 3: Calculate total power flows
     #
-    Ibases = Sbase / (Vbus*Vbases * sqrt(3))
-    I = Ybus.dot(Vbus) * Ibases
-    Sbus = conjugate(I) * Vbus*Vbases * sqrt(3)
+    Ibases = net.Sbase / (Vbus*net.Vbases * sqrt(3))
+    I = net.Ybus.dot(Vbus) * Ibases
+    Sbus = conjugate(I) * Vbus*net.Vbases * sqrt(3)
 
+    #
+    # Step 4: Print results
+    #
+    Vnominal = net.Vbases[2:]
+    Vactual  = (Vbus*net.Vbases)[2:]
+    Vactual_pu = Vbus[2:]
 
-    #
-    # Step 5: Print results
-    #
     print(f"""
     |--------------| {line(6)} |
     |              | {areas()} |
     |--------------| {line(6)} |
-    | Vnominal [V] | {abs_values(Vbases[2:])} |
-    | Vactual  [V] | {abs_values((Vbus*Vbases)[2:])} |
-    | Vactual [pu] | {abs_values(Vbus[2:])} |
+    | Vnominal [V] | {abs_values(Vnominal)} |
+    | Vactual  [V] | {abs_values(Vactual)} |
+    | Vactual [pu] | {abs_values(Vactual_pu)} |
     |--------------| {line(6)} |
     """)
+    
+    return Vbus
 
-    Ycable = array([YC1,YC2,YC3]) / (11e3**2/Sbase)
-    return Ycable, Vbus, Sbase, Vbases
 
-
-def active_power_losses(Ycable, Vbus):
+def active_cable_losses(net, Vbus):
+    """Calculate active power losses on the cables in the network for a given Vbus"""
     from numpy import array, conjugate
 
     Vcable = array([
@@ -240,7 +234,7 @@ def active_power_losses(Ycable, Vbus):
         Vbus[6]-Vbus[4], # between busbar 7 and 5
     ])
 
-    Icable = (Vcable*Ycable / 3**0.5)
+    Icable = (Vcable*net.Ycable / 3**0.5)
 
     Scable = conjugate(Icable) * Vcable
 
@@ -253,6 +247,41 @@ def active_power_losses(Ycable, Vbus):
     | Pcable [W]  | {real_values(Scable)} |
     |-------------| {line(3)} |
     """)
+
+
+def trafo_utilization(net, Vbus):
+    """Calculate trafo utilization of trafos in the network for a given Vbus."""
+    
+    from numpy import array, conjugate, sqrt
+
+    StrafoMax = net.StrafoMax[1:]
+    VbasesLV = array([net.Vbases[3::2]) 
+    VtrafoHV_pu = array([Vbus[2::2]) 
+    VtrafoLV_pu = array([Vbus[3::2])  
+
+    # Voltage drop across each trafo
+    ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
+
+    # Current through each trafo
+    Itrafo_pu = ΔVtrafo_pu * net.Ytrafo
+
+    # Assume that all current is discharged to 0V on the low voltage side of the trafo.
+    # This gives us the trafo power loading:
+    ItrafoLV = Itrafo_pu * (net.Sbase / VbasesLV) 
+    StrafoLV = VtrafoLV_pu * VbasesLV * conjugate(ItrafoLV)
+    StrafoLoadPercent = (abs(StrafoLV) / StrafoMax )*100
+    
+    # Print results
+    print(f"""
+    |---------------- | {line(len(StrafoMax))} |
+    |                 | {names("Area", len(StrafoMax))} |
+    |-----------------| {line(len(StrafoMax))} |
+    | StrafoMax  [VA] | {abs_values(StrafoMax)} |
+    | StrafoLoad [VA] | {abs_values(StrafoLV)} |
+    | StrafoLoad [%]  | {abs_values(StrafoLoadPercent)} |
+    |-----------------| {line(len(StrafoMax))} |
+    """) 
+
 
 
 #

@@ -1,6 +1,6 @@
 """
 ------------------------------------------------------------------------------
-TSE2220: Oblig Power factory / Task3 Short-circuit analysis "by hand"
+TSE2220: Oblig Power factory / Task3 Short-circuit analysis
 Student: Jonas (267431@usn.no)
 ------------------------------------------------------------------------------
 """
