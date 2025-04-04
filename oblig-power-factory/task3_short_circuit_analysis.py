@@ -36,10 +36,10 @@ def short_circuit(net: Network):
     Xgrid_max = Sbase / net.Sgrid_max
 
     # Traforeaktanser
-    XT1, XT2, XT3, XT4 = abs(net.Ytrafos_pu**-1)
+    XT1, XT2, XT3, XT4 = abs(net.Ytrafo_pu**-1)
     print(" | ".join([f"XTrafo{i+1}: {x:.3g}" for i,x in enumerate([XT1, XT2, XT3, XT4])]))
 
-    XCable1, XCable2, XCable3 = abs(net.Ycables_pu**-1)
+    XCable1, XCable2, XCable3 = abs(net.Ycable_pu**-1)
     print(" | ".join([f"XCable{i+1}: {x:.3g}" for i,x in enumerate([XCable1, XCable2, XCable3])]))
 
 
@@ -57,15 +57,15 @@ def short_circuit(net: Network):
     Xkss_max = Xgrid_max + Xkss
 
     # Kortslutningsstrømmer min og max
-    Vkss = net.Vbases[2:]
+    Vkbase = net.Vbase[2:]
 
     Skss_min_base = Sbase / Xkss_min
     Ikss_min_base = Skss_min_base / (sqrt(3) * Vbase)
-    Ikss_min = Ikss_min_base * (Vbase / Vkss)
+    Ikss_min = Ikss_min_base * (Vbase / Vkbase)
 
     Skss_max_base = Sbase / Xkss_max
     Ikss_max_base = Skss_max_base / (sqrt(3) * Vbase)
-    Ikss_max = Ikss_max_base * (Vbase / Vkss)
+    Ikss_max = Ikss_max_base * (Vbase / Vkbase)
 
     #
     # Skriv resultater til skjerm

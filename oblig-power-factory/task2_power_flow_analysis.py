@@ -10,14 +10,10 @@ from numpy import array, conjugate, sqrt, ndarray, ones
 
 def main():
     #
-    # Task 1 - Configure network
-    #
-    net = configure_network()
-
-    #
     # Task 2a) - Do a load flow simulation on the configured network from task 1
     #
     title("Task 2a): Do a load flow simulation")
+    net = configure_network()
     Vbus = load_flow(net)
     trafo_utilization(net, Vbus)
     
@@ -42,7 +38,7 @@ def main():
     # Task 2c)
     #
     title("Task 2c): Change length of the cable 1 from 200m to 16 000m")
-    net = configure_network(Lcable1_km=16.0) # re-configure
+    net = configure_network(Lcable1_km=16.0)
     Vbus = load_flow(net)
 
     #
@@ -106,14 +102,14 @@ def load_flow(net: Network, extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 
     #
     # Step 3: Calculate total power flows
     #
-    Ibases = net.Sbase / (Vbus_pu*net.Vbases * sqrt(3))
+    Ibases = net.Sbase / (Vbus_pu*net.Vbase * sqrt(3))
     I = net.Ybus_pu.dot(Vbus_pu) * Ibases
 
     #
     # Step 4: Print results
     #
-    Vnominal = net.Vbases[2:]
-    Vactual  = (Vbus_pu*net.Vbases)[2:]
+    Vnominal = net.Vbase[2:]
+    Vactual  = (Vbus_pu*net.Vbase)[2:]
     Vactual_pu = Vbus_pu[2:]
 
     print(f"""
@@ -129,15 +125,47 @@ def load_flow(net: Network, extra_p_area1 = 0, extra_p_area2 = 0, extra_p_area3 
     return Vbus_pu
 
 
+
+def trafo_utilization(net: Network, Vbus_pu: ndarray):
+    """Calculate trafo utilization of trafos in the network for a given Vbus_pu."""
+    
+    Strafo_max = net.Strafo_max[1:]
+    VbaseLV = array(net.Vbase[3::2]) 
+    VtrafoHV_pu = array(Vbus_pu[2::2]) 
+    VtrafoLV_pu = array(Vbus_pu[3::2])  
+
+    # Voltage drop across each trafo
+    ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
+
+    # Current through each trafo
+    Itrafo_pu = ΔVtrafo_pu * net.Ytrafo_pu[1:]
+
+    # Assume that all current is discharged to 0V on the low voltage side of the trafo.
+    # This gives us the trafo power loading:
+    ItrafoLV = Itrafo_pu * (net.Sbase / VbaseLV) / sqrt(3)
+    StrafoLV = VtrafoLV_pu * VbaseLV * conjugate(ItrafoLV) * sqrt(3)
+    StrafoLoadPercent = (abs(StrafoLV) / Strafo_max )*100
+    
+    # Print results
+    print(f"""
+    |------------------| {line(len(Strafo_max))} |
+    |                  | {names("Area", len(Strafo_max))} |
+    |------------------| {line(len(Strafo_max))} |
+    | Strafo_max  [VA] | {abs_values(Strafo_max)} |
+    | StrafoLoad [VA]  | {abs_values(StrafoLV)} |
+    | StrafoLoad [%]   | {abs_values(StrafoLoadPercent)} |
+    |------------------| {line(len(Strafo_max))} |
+    """) 
+
+
 def active_cable_losses(net: Network, Vbus_pu):
     """Calculate active power losses on the cables in the network for a given Vbus_pu"""
 
-    VcableBases = net.Vbases[2::2]
     ΔVcable = array([
         Vbus_pu[2]-Vbus_pu[1], # between busbar 3 and 2
         Vbus_pu[4]-Vbus_pu[2], # between busbar 5 and 3
         Vbus_pu[6]-Vbus_pu[4], # between busbar 7 and 5
-    ]) * VcableBases
+    ]) * 11e3
 
     # Current through the cables
     Icable = (ΔVcable*net.Ycable_pu / sqrt(3))
@@ -154,39 +182,6 @@ def active_cable_losses(net: Network, Vbus_pu):
     | Pcable [W]  | {real_values(Scable)} |
     |-------------| {line(len(ΔVcable))} |
     """)
-
-
-def trafo_utilization(net: Network, Vbus_pu: ndarray):
-    """Calculate trafo utilization of trafos in the network for a given Vbus_pu."""
-    
-    StrafoMax = net.StrafoMax[1:]
-    VbasesLV = array(net.Vbases[3::2]) 
-    VtrafoHV_pu = array(Vbus_pu[2::2]) 
-    VtrafoLV_pu = array(Vbus_pu[3::2])  
-
-    # Voltage drop across each trafo
-    ΔVtrafo_pu = VtrafoHV_pu - VtrafoLV_pu
-
-    # Current through each trafo
-    Itrafo_pu = ΔVtrafo_pu * net.Ytrafo_pu[1:]
-
-    # Assume that all current is discharged to 0V on the low voltage side of the trafo.
-    # This gives us the trafo power loading:
-    ItrafoLV = Itrafo_pu * (net.Sbase / VbasesLV) 
-    StrafoLV = VtrafoLV_pu * VbasesLV * conjugate(ItrafoLV)
-    StrafoLoadPercent = (abs(StrafoLV) / StrafoMax )*100
-    
-    # Print results
-    print(f"""
-    |---------------- | {line(len(StrafoMax))} |
-    |                 | {names("Area", len(StrafoMax))} |
-    |-----------------| {line(len(StrafoMax))} |
-    | StrafoMax  [VA] | {abs_values(StrafoMax)} |
-    | StrafoLoad [VA] | {abs_values(StrafoLV)} |
-    | StrafoLoad [%]  | {abs_values(StrafoLoadPercent)} |
-    |-----------------| {line(len(StrafoMax))} |
-    """) 
-
 
 
 #

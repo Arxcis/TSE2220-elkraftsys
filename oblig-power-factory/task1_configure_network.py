@@ -14,16 +14,16 @@ class Network():
     Sgrid_min: float
     Sgrid_max: float
     Sbase: float
-    Vbases: ndarray
+    Vbase: ndarray
     Ybus_pu: ndarray
 
     # Trafos
-    StrafosMax: ndarray
-    Ytrafos_pu: ndarray
+    Strafo_max: ndarray
+    Ytrafo_pu: ndarray
     
     # Cables
-    Lcables_km: ndarray
-    Ycables_pu: ndarray
+    Lcable_km: ndarray
+    Ycable_pu: ndarray
 
 
 def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_pu=0.03) -> Network:
@@ -76,8 +76,8 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
 
         return 1/(r_pu + x_pu)
 
-    Lcables_km = array([Lcable1_km, 2.0, 1.0])
-    YC1, YC2, YC3 = ycable_pu(km=Lcables_km, vbase=11e3)
+    Lcable_km = array([Lcable1_km, 2.0, 1.0])
+    YC1, YC2, YC3 = ycable_pu(km=Lcable_km, vbase=11e3)
 
     Ybus_pu = array([
     # Bus   1,         2,             3,    4,              5,    6,         7,    8
@@ -95,14 +95,18 @@ def configure_network(Lcable1_km=0.2, Sgrid_min=60e6, Sgrid_max=100e6, Ztrafo1_p
         Sgrid_min = Sgrid_min,
         Sgrid_max = Sgrid_max,
         Sbase = Sbase,
-        StrafosMax = array([40e6, 400e3, 700e3, 2000e3]),
-        Vbases = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230]),
+        Strafo_max = array([40e6, 400e3, 700e3, 2000e3]),
+        Vbase = array([132e3, 11e3, 11e3, 230, 11e3, 230, 11e3, 230]),
         Ybus_pu = Ybus_pu,
-        Ytrafos_pu = array([YT1, YT2, YT3, YT4]),
-        Ycables_pu = array([YC1, YC2, YC3]),
-        Lcables_km=Lcables_km
+        Ytrafo_pu = array([YT1, YT2, YT3, YT4]),
+        Ycable_pu = array([YC1, YC2, YC3]),
+        Lcable_km=Lcable_km
     )
     
     return net
 
 
+if __name__ == "__main__":
+    net = configure_network()
+
+    print(net)
