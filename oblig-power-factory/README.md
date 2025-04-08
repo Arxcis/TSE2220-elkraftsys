@@ -43,7 +43,12 @@ The given network is given by the figure below. It contains 4 trafos, 3 cable st
 _Caption: View of the network with all the different components_
 
 
-Each component of the network induces an impedance to the network. All components together with their impedances and relationships can be expressed mathematically and programatically as a matrix called the Y-bus matrix. The Y-bus matrix is represented as python code below. YT1, YT2, YT3 and YT4 are trafo-admittances. YC1, YC2 and YC3 are cable-admittances. 
+Each component of the network induces an impedance to the network. All components together with their impedances and relationships can be expressed mathematically and programatically as a matrix called the Y-bus matrix.
+```math
+Y_{bus} = \begin{bmatrix}  +Y_{11} & -Y_{12} & \cdots & -Y_{1n} \\ -Y_{21} & +Y_{22} & \cdots & -Y_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ -Y_{n1} & -Y_{n2} & \cdots & +Y_{nn} \\ \end{bmatrix}
+```
+
+The Y-bus matrix is represented as python code below. YT1, YT2, YT3 and YT4 are names of trafo-admittances. YC1, YC2 and YC3 are names of cable-admittances.
 ```py
 Ybus_pu = array([
 # Bus   1,         2,             3,    4,              5,    6,         7,    8
