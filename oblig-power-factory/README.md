@@ -15,7 +15,7 @@ This work contains the following files:
 ## Task 1: Network Configuration
 
 The given network is given by the figure below. It contains 4 trafos, 3 cable stretches, an external grid with a given minimum and maximum short-circuit power and 8 buses. 6 of the buses are of special interest in this work and have been given special names - Area1HV, Area1LV, Area2HV, Area2LV, Area3HV and Area3LV.
-```
+```sh
     The default network:
                --------
                | Grid |  min/max: 60/100MVA
@@ -67,7 +67,10 @@ _Caption: The Y-bus matrix as a python numpy-array as it is found in task1_netwo
 
 ## Task 2: Load-flow analysis
 
-### Task 2a): Do a load flow in Power Factory
+### Task 2a): Do a load flow analysis
+
+To do a load flow analysis loads are "attached" to the network which is represented by the Y-bus matrix. When the both the loads and the admittances are known, the Voltages can be numerically approximated. By fixating the Bus1-voltage to 1pu and allow the other voltages to move freely, they will converge over time to their actual value using the Gauss-Siedel-method.
+
 
 ```sh
 jonas@pop-os:~/git/TSE2220-elkraftsys/oblig-power-factory$ python task2-power-flow-analysis.py
@@ -144,7 +147,7 @@ After changing the cable from 200m to 16km, we do not have a satisfactory networ
 
 The active
 
-```
+```sh
 	Task 2d): How much active power losses are there when running 2c)?
 
     |-------------| ---------- | ---------- | ---------- |
@@ -167,7 +170,7 @@ The active
 
 ### 3c) Calculate the short-circuit values by hand using impedance method
 
-```
+```sh
 jonas@pop-os:~/git/TSE2220-elkraftsys$ python oblig-power-factory/main.py
 ---------------------------------
 Grid min: 6e+07, Grid max: 1e+08
@@ -194,7 +197,7 @@ XCable1: 9.18e-05 | XCable2: 0.000918 | XCable3: 0.000459
 
 - External grid min: 600MVA and max 1000MVA.
 
-```
+```sh
 ---------------------------------
 Grid min: 6e+08, Grid max: 1e+09
 ---------------------------------
@@ -218,7 +221,7 @@ XCable1: 9.18e-05 | XCable2: 0.000918 | XCable3: 0.000459
 
 ### 3f) Increase interanl inductance (Uk) in transformer T1 to 13%.
 
-```
+```sh
 ---------------------------------
 Grid min: 6e+08, Grid max: 1e+09
 ---------------------------------
