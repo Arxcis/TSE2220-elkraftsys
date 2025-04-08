@@ -2,33 +2,38 @@
 
 ## Introduction
 
-This work accounts for 10% of the total grade of the subject TSE2220. It uses the simulation software DIGSILENT Power Factory and Python to solve 3 tasks. Task 1 (25%) is to build a 11kV distribution network given some preliminary data. Task 2 - Load flow simulation (35%) and Task 3 - Short-circuit analysis (40%) carries out calculations and analysis of the network.
+This work accounts for 10% of the total grade of the subject TSE2220. It uses python to solve 3 tasks. Task 1 (25%) is to build a 11kV distribution network given some preliminary data. Task 2 - Load flow simulation (35%) and Task 3 - Short-circuit analysis (40%) carries out calculations and analysis of the network.
 
-This work contains:
+This work contains the following files:
 
-- A "README.pdf"-file      - containing the text you are currently reading.
-- "task2-load-analysis.py" - which contains the load-analysis using Gauss-Siedel-method, formalized into a python-script.
-- "task3-short-circuit.py" - which contains the shortcut-analysis using the impedance-method, formalized into a python-script.
+- A "README.pdf"-file    - the text you are currently reading.
+- task1\_network\_configuration.py - A python-script with the configuration of the network, imported by the other two python-scripts.
+- task2\_load\_analysis.py - the load-analysis using Gauss-Siedel-method, formalized into a python-script.
+- task3\_short\_circuit.py - the shortcut-analysis using the impedance-method, formalized into a python-script.
+
 
 ## Task 1: Network Configuration
+
+The given network is given by the figure below. It contains 4 trafos, 3 cable stretches, an external grid with a given minimum and maximum short-circuit power and 8 buses. 6 of the buses are of special interest in this work and have been given special names - Area1HV, Area1LV, Area2HV, Area2LV, Area3HV and Area3LV.
 ```
+    The default network:
                --------
-               | Grid |
+               | Grid |  min/max: 60/100MVA
                --------
                    |
      Bus 1 ---------------
            Trafo 1 | 132kV
-                   O
-                   O
-                   |  11kV
+                   O 40MVA
+                   O j0.03
+                   | 11kV
      Bus 2 ---------------   
-                   |
-           Cable 1 |   |--- Cable 2 ---------------|--- Cable 3 ---------------|
-                   |   |                           |                           |    
+                   | 
+           Cable 1 |   |---- - Cable 2 2km --------|---- Cable 3 1km ----------| <-- (0.12 + j0.20) Ohm/km
+              200m |   |                           |                           |    
  Area 1 HV ----------------       Area 2 HV ---------------   Area 3 HV --------------- 
             Trafo 2 | 11kV                 Trafo 3 | 11kV              Trafo 4 | 11kV
-                    O                              O                           O
-                    O                              O                           O
+                    O 400kVA                       O 700kVA                    O 2000kVA
+                    O j0.06                        O j0.06                     O j0.06
                     | 230V                         | 230V                      | 230V
  Area 1 LV -----------------      Area 2 LV ---------------   Area 3 LV ---------------
                    |                               |                           |
@@ -37,6 +42,23 @@ This work contains:
 ```
 _Caption: View of the network with all the different components_
 
+
+Each component of the network induces an impedance to the network. All components together with their impedances and relationships can be expressed mathematically and programatically as a matrix called the Y-bus matrix. The Y-bus matrix is represented as python code below. YT1, YT2, YT3 and YT4 are trafo-admittances. YC1, YC2 and YC3 are cable-admittances. 
+```py
+Ybus_pu = array([
+# Bus   1,         2,             3,    4,              5,    6,         7,    8
+    [+YT1,      -YT1,             0,    0,              0,    0,         0,    0], # 1. bus
+    [-YT1, (YT1+YC1),          -YC1,    0,              0,    0,         0,    0], # 2. bus
+    [   0,      -YC1, (YC1+YT2+YC2), -YT2,           -YC2,    0,         0,    0], # 3. etc...
+    [   0,         0,          -YT2, +YT2,              0,    0,         0,    0], # 4.
+    [   0,         0,          -YC2,    0,  (YC2+YT3+YC3), -YT3,      -YC3,    0], # 5.
+    [   0,         0,             0,    0,           -YT3, +YT3,         0,    0], # 6.
+    [   0,         0,             0,    0,           -YC3,    0, (YC3+YT4), -YT4], # 7.
+    [   0,         0,             0,    0,              0,    0,      -YT4, +YT4], # 8.
+])
+```
+_Caption: The Y-bus matrix as a python numpy-array as it is found in task1_network_configuration.py_
+   
 
 ## Task 2: Load-flow analysis
 
