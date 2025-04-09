@@ -48,10 +48,19 @@ def main():
     # Task 2d)
     #
     title("Task 2d): How much active power losses are there when running 2c)?")
+    
+    print("    0.2km:")
+    net = configure_network()
+    Vbus = load_flow(net, silent=True)
     active_cable_losses(net, Vbus)
- 
+    
+    print("    16.0km:")
+    net = configure_network(Lcable1_km=16.0)
+    Vbus = load_flow(net, silent=True)
+    active_cable_losses(net, Vbus)
 
-def load_flow(net: Network):
+
+def load_flow(net: Network, silent: bool = False):
     """
     Does a load flow using Gauss-Siedel-numerical approximation method, for a given network and load. 
 
@@ -77,6 +86,9 @@ def load_flow(net: Network):
     Vnominal = net.Vbase[2:]
     Vactual  = (Vbus_pu*net.Vbase)[2:]
     Vactual_pu = Vbus_pu[2:]
+    
+    if silent:
+        return Vbus_pu
 
     print(f"""
     |--------------| {line(len(Vnominal))} |
